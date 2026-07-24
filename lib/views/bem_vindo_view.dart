@@ -26,7 +26,7 @@ class BemVindoView extends StatelessWidget {
                 ),
                 child: ClipOval(
                   child: Image.asset(
-                    'lib/assets/images/logo.png',
+                    'assets/images/logo.png',
                     fit: BoxFit.contain,
                   ),
                 ),
