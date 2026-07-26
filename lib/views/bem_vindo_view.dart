@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'cadastro_view.dart';
 
 class BemVindoView extends StatelessWidget {
   const BemVindoView({super.key});
@@ -71,7 +72,7 @@ class BemVindoView extends StatelessWidget {
                     child: const Text(
                       'Login',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -81,7 +82,10 @@ class BemVindoView extends StatelessWidget {
 
                   // Botão Cadastrar
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroView()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1B263B),
                       padding: const EdgeInsets.symmetric(vertical: 18),
@@ -92,7 +96,7 @@ class BemVindoView extends StatelessWidget {
                     child: const Text(
                       'Cadastrar',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFE0E1DD),
                       ),
