@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
-import '../models/repositories/cadastro_repository.dart'; 
+import '../models/repositories/cadastro_repository.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -13,20 +13,17 @@ class CadastroController {
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
 
-  
   final CadastroRepository _repository = CadastroRepository();
 
   void finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       try {
-        
         final novoUsuario = UsuarioModel(
           nome: nomeController.text.trim(),
           email: emailController.text.trim(),
           senha: senhaController.text.trim(),
         );
 
-        
         String uid = await _repository.cadastrarUsuarioComEmail(novoUsuario);
 
         debugPrint('SUCESSO COMPLETO!');
@@ -59,9 +56,7 @@ class CadastroController {
     }
   }
 
- 
-
-  Future<void> cadastrarComGoogle() async {
+  Future<void> cadastrarComGoogle(BuildContext context) async {
     try {
       await GoogleSignIn.instance.initialize();
 
@@ -98,12 +93,28 @@ class CadastroController {
 
       debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conta Google conectada com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
       debugPrint('Erro ao cadastrar com o Google: $e');
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao conectar Google: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
-  Future<void> cadastrarComFacebook() async {
+  Future<void> cadastrarComFacebook(BuildContext context) async {
     try {
       final LoginResult result = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
@@ -135,8 +146,24 @@ class CadastroController {
 
       debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conta Facebook conectada com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
       debugPrint('Erro ao cadastrar com o Facebook: $e');
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao conectar Facebook: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

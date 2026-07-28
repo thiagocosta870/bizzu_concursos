@@ -234,7 +234,7 @@ class CadastroView extends StatelessWidget {
                         children: [
                           IconButton(
                             onPressed: () {
-                              _controller.cadastrarComGoogle();
+                              _controller.cadastrarComGoogle(context);
                             },
                             icon: const Icon(Icons.g_mobiledata, size: 40),
                             style: IconButton.styleFrom(
@@ -247,7 +247,7 @@ class CadastroView extends StatelessWidget {
                           const SizedBox(width: 32),
                           IconButton(
                             onPressed: () {
-                              _controller.cadastrarComFacebook();
+                              _controller.cadastrarComFacebook(context);
                             },
                             icon: const Icon(Icons.facebook, size: 40),
                             style: IconButton.styleFrom(
