@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bizzu_concursos/controllers/cadastro_controller.dart'; // Ajuste se o caminho estiver diferente
+import 'package:bizzu_concursos/controllers/cadastro_controller.dart'; 
 
 class CadastroView extends StatelessWidget {
   final CadastroController _controller = CadastroController();
@@ -25,7 +25,7 @@ class CadastroView extends StatelessWidget {
                   vertical: 8.0,
                 ),
 
-                // 1. AQUI ESTÁ O NOSSO FORM RECEBENDO A CHAVE-MESTRA:
+                
                 child: Form(
                   key: _controller.formKey,
 
@@ -35,9 +35,9 @@ class CadastroView extends StatelessWidget {
                     children: [
                       Center(
                         child: Container(
-                          width: 140,
-                          height: 140,
-                          padding: const EdgeInsets.all(5),
+                          width: 180,
+                          height: 180,
+                          padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             color: const Color(0xFF02080C),
                             shape: BoxShape.circle,
@@ -54,7 +54,7 @@ class CadastroView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 35),
                       const Text(
                         'Crie sua conta',
                         style: TextStyle(
@@ -66,7 +66,7 @@ class CadastroView extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
 
-                      // CAMPO DE NOME COM VALIDAÇÃO
+                     
                       TextFormField(
                         controller: _controller.nomeController,
                         style: const TextStyle(color: Colors.white),
@@ -101,12 +101,12 @@ class CadastroView extends StatelessWidget {
                           if (value == null || value.trim().isEmpty) {
                             return 'Por favor, informe seu nome completo.';
                           }
-                          return null; // Null significa que passou no teste!
+                          return null; 
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // CAMPO DE E-MAIL COM VALIDAÇÃO
+                      
                       TextFormField(
                         controller: _controller.emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -149,7 +149,7 @@ class CadastroView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
 
-                      // CAMPO DE SENHA COM VALIDAÇÃO
+                      
                       TextFormField(
                         controller: _controller.senhaController,
                         obscureText: true,
@@ -233,7 +233,9 @@ class CadastroView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _controller.cadastrarComGoogle();
+                            },
                             icon: const Icon(Icons.g_mobiledata, size: 40),
                             style: IconButton.styleFrom(
                               backgroundColor: Colors.white,
@@ -244,7 +246,9 @@ class CadastroView extends StatelessWidget {
                           ),
                           const SizedBox(width: 32),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _controller.cadastrarComFacebook();
+                            },
                             icon: const Icon(Icons.facebook, size: 40),
                             style: IconButton.styleFrom(
                               backgroundColor: Colors.white,

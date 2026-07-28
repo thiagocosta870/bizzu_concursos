@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 1. Importamos o Auth do Firebase
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
+import '../models/repositories/cadastro_repository.dart'; 
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -9,39 +13,130 @@ class CadastroController {
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
 
-  // Tornamos a função 'async' porque a conexão com a nuvem leva alguns milissegundos
+  
+  final CadastroRepository _repository = CadastroRepository();
+
   void finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       try {
-        // 2. Criamos o usuário de verdade no Firebase Auth
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: senhaController.text.trim(),
-        );
-
-        // Pegamos o ID único gerado pelo Google para este usuário
-        String uid = userCredential.user?.uid ?? '';
-
+        
         final novoUsuario = UsuarioModel(
           nome: nomeController.text.trim(),
           email: emailController.text.trim(),
           senha: senhaController.text.trim(),
         );
 
-        debugPrint('--- SUCESSO! USUÁRIO CADASTRADO NO FIREBASE ---');
-        debugPrint('UID do Firebase: $uid');
-        debugPrint('Nome: ${novoUsuario.nome}');
-        debugPrint('E-mail: ${novoUsuario.email}');
+        
+        String uid = await _repository.cadastrarUsuarioComEmail(novoUsuario);
 
-        // Aqui depois podemos colocar um comando para avançar de tela!
+        debugPrint('SUCESSO COMPLETO!');
+        debugPrint('Usuário criado e salvo no Firestore com UID: $uid');
 
-      } on FirebaseAuthException catch (e) {
-        // 3. Tratamento caso dê algum erro (ex: e-mail já cadastrado, senha fraca)
-        debugPrint('Erro ao cadastrar no Firebase: ${e.message}');
+        if (!context.mounted) return;
+
+        nomeController.clear();
+        emailController.clear();
+        senhaController.clear();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Cadastro realizado com sucesso!',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } catch (e) {
+        debugPrint('Erro ao salvar usuário: $e');
       }
-      
     } else {
       debugPrint('Bloqueado: O usuário preencheu algo errado.');
+    }
+  }
+
+ 
+
+  Future<void> cadastrarComGoogle() async {
+    try {
+      await GoogleSignIn.instance.initialize();
+
+      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
+          .authenticate();
+
+      if (googleUser == null) {
+        debugPrint('Login com Google cancelado pelo usuário.');
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final clientAuth = await googleUser.authorizationClient.authorizeScopes([
+        'email',
+      ]);
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: clientAuth.accessToken,
+      );
+
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(credential);
+      String uid = userCredential.user?.uid ?? '';
+
+      await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
+        'uid': uid,
+        'nome': userCredential.user?.displayName ?? 'Usuário',
+        'email': userCredential.user?.email ?? '',
+        'criadoEm': Timestamp.now(),
+      }, SetOptions(merge: true));
+
+      debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
+      debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
+    } catch (e) {
+      debugPrint('Erro ao cadastrar com o Google: $e');
+    }
+  }
+
+  Future<void> cadastrarComFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login(
+        permissions: ['email', 'public_profile'],
+      );
+
+      if (result.status != LoginStatus.success) {
+        debugPrint(
+          'Login com Facebook cancelado ou falhou. Status: ${result.status}',
+        );
+        return;
+      }
+
+      final AccessToken accessToken = result.accessToken!;
+
+      final OAuthCredential credential = FacebookAuthProvider.credential(
+        accessToken.tokenString,
+      );
+
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(credential);
+      String uid = userCredential.user?.uid ?? '';
+
+      await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
+        'uid': uid,
+        'nome': userCredential.user?.displayName ?? 'Usuário',
+        'email': userCredential.user?.email ?? '',
+        'criadoEm': Timestamp.now(),
+      }, SetOptions(merge: true));
+
+      debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
+      debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
+    } catch (e) {
+      debugPrint('Erro ao cadastrar com o Facebook: $e');
     }
   }
 

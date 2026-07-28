@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bizzu Concursos</string>
+    <string name="facebook_app_id">1031091579655479</string>
+    <string name="facebook_client_token">fbe677ec0cd205ac044247c140793454</string>
+    <string name="fb_login_protocol_scheme">fb1031091579655479</string>
+</resources>

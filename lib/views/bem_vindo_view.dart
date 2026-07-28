@@ -45,13 +45,10 @@ class BemVindoView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Estratégia e disciplina na palma da sua mão.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: const Color(0xFFE0E1DD),
-                    ),
+                    style: TextStyle(fontSize: 20, color: Color(0xFFE0E1DD)),
                   ),
                 ],
               ),
@@ -59,7 +56,7 @@ class BemVindoView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Botão Login
+                  
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -80,10 +77,14 @@ class BemVindoView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Botão Cadastrar
+                  
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroView()),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CadastroView(),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
