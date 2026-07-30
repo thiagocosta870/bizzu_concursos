@@ -1,10 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:bizzu_concursos/controllers/cadastro_controller.dart'; 
+import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 
-class CadastroView extends StatelessWidget {
+// 1. Transformamos em StatefulWidget
+class CadastroView extends StatefulWidget {
+  const CadastroView({super.key});
+
+  @override
+  State<CadastroView> createState() => _CadastroViewState();
+}
+
+class _CadastroViewState extends State<CadastroView> {
   final CadastroController _controller = CadastroController();
 
-  CadastroView({super.key});
+  // --- VARIÁVEL DE CONTROLE DO LOADING ---
+  bool _isLoading = false;
+
+  // --- FUNÇÃO AJUDANTE PARA EXECUTAR AÇÕES COM LOADING ---
+  Future<void> _executarComLoading(Future<void> Function() acao) async {
+    // Liga a tela de carregamento
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Aguarda a ação terminar (comunicação com Firebase)
+    await acao();
+
+    // Desliga a tela de carregamento se a tela ainda estiver aberta
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,258 +41,303 @@ class CadastroView extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 8.0,
-                ),
-
-                
-                child: Form(
-                  key: _controller.formKey,
-
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 180,
-                          height: 180,
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF02080C),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 251, 239, 12),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 35),
-                      const Text(
-                        'Crie sua conta',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(height: 32),
-
-                     
-                      TextFormField(
-                        controller: _controller.nomeController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          labelText: 'Nome Completo',
-                          labelStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon: const Icon(
-                            Icons.person,
-                            color: Colors.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: const Color(0xFF415A77),
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            // Borda vermelha de erro
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, informe seu nome completo.';
-                          }
-                          return null; 
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      
-                      TextFormField(
-                        controller: _controller.emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          labelText: 'E-mail',
-                          labelStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon: const Icon(
-                            Icons.email,
-                            color: Colors.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: const Color(0xFF415A77),
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, informe seu e-mail.';
-                          } else if (!value.contains('@') ||
-                              !value.contains('.')) {
-                            return 'Informe um e-mail válido (ex: seu@email.com).';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      
-                      TextFormField(
-                        controller: _controller.senhaController,
-                        obscureText: true,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          labelStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon: const Icon(
-                            Icons.lock,
-                            color: Colors.grey,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: const Color(0xFF415A77),
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, crie uma senha.';
-                          } else if (value.length < 6) {
-                            return 'A senha deve ter pelo menos 6 caracteres.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 32),
-
-                      ElevatedButton(
-                        onPressed: () {
-                          _controller.finalizarCadastro(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF415A77),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Finalizar Cadastro',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      Row(
+      // 2. Envolvemos o corpo inteiro em um Stack para sobrepor o Loading
+      body: Stack(
+        children: [
+          // --- CONTEÚDO ORIGINAL DA SUA TELA ---
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8.0,
+                    ),
+                    child: Form(
+                      key: _controller.formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Expanded(
-                            child: Divider(color: Colors.grey, thickness: 0.5),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'ou cadastre-se com',
-                              style: TextStyle(
-                                color: Colors.grey.shade400,
-                                fontSize: 14,
+                          Center(
+                            child: Container(
+                              width: 180,
+                              height: 180,
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF02080C),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color.fromARGB(
+                                    255,
+                                    251,
+                                    239,
+                                    12,
+                                  ),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'assets/images/logo.png',
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
-                          const Expanded(
-                            child: Divider(color: Colors.grey, thickness: 0.5),
+                          const SizedBox(height: 35),
+                          const Text(
+                            'Crie sua conta',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          const SizedBox(height: 32),
+                          TextFormField(
+                            controller: _controller.nomeController,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Nome Completo',
+                              labelStyle: const TextStyle(color: Colors.grey),
+                              prefixIcon: const Icon(
+                                Icons.person,
+                                color: Colors.grey,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF415A77),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor, informe seu nome completo.';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _controller.emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'E-mail',
+                              labelStyle: const TextStyle(color: Colors.grey),
+                              prefixIcon: const Icon(
+                                Icons.email,
+                                color: Colors.grey,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF415A77),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor, informe seu e-mail.';
+                              } else if (!value.contains('@') ||
+                                  !value.contains('.')) {
+                                return 'Informe um e-mail válido (ex: seu@email.com).';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _controller.senhaController,
+                            obscureText: true,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Senha',
+                              labelStyle: const TextStyle(color: Colors.grey),
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                color: Colors.grey,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF415A77),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor, crie uma senha.';
+                              } else if (value.length < 6) {
+                                return 'A senha deve ter pelo menos 6 caracteres.';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          ElevatedButton(
+                            // --- ATUALIZADO: Usando a função de loading ---
+                            onPressed: () {
+                              _executarComLoading(() async {
+                                await _controller.finalizarCadastro(context);
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF415A77),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Finalizar Cadastro',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          Row(
+                            children: [
+                              const Expanded(
+                                child: Divider(
+                                  color: Colors.grey,
+                                  thickness: 0.5,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Text(
+                                  'ou cadastre-se com',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade400,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              const Expanded(
+                                child: Divider(
+                                  color: Colors.grey,
+                                  thickness: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                // --- ATUALIZADO: Usando a função de loading ---
+                                onPressed: () {
+                                  _executarComLoading(() async {
+                                    await _controller.cadastrarComGoogle(
+                                      context,
+                                    );
+                                  });
+                                },
+                                icon: const Icon(Icons.g_mobiledata, size: 40),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.red,
+                                  padding: const EdgeInsets.all(12),
+                                  minimumSize: const Size(60, 40),
+                                ),
+                              ),
+                              const SizedBox(width: 32),
+                              IconButton(
+                                // --- ATUALIZADO: Usando a função de loading ---
+                                onPressed: () {
+                                  _executarComLoading(() async {
+                                    await _controller.cadastrarComFacebook(
+                                      context,
+                                    );
+                                  });
+                                },
+                                icon: const Icon(Icons.facebook, size: 40),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.blue.shade800,
+                                  padding: const EdgeInsets.all(12),
+                                  minimumSize: const Size(60, 40),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              _controller.cadastrarComGoogle(context);
-                            },
-                            icon: const Icon(Icons.g_mobiledata, size: 40),
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.red,
-                              padding: const EdgeInsets.all(12),
-                              minimumSize: const Size(60, 40),
-                            ),
-                          ),
-                          const SizedBox(width: 32),
-                          IconButton(
-                            onPressed: () {
-                              _controller.cadastrarComFacebook(context);
-                            },
-                            icon: const Icon(Icons.facebook, size: 40),
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.blue.shade800,
-                              padding: const EdgeInsets.all(12),
-                              minimumSize: const Size(60, 40),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // --- CAMADA ESCURA DO LOADING (Fica por cima de tudo) ---
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(
+                0.6,
+              ), // Fundo preto com 60% de transparência
+              child: const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(255, 251, 239, 12), // O amarelo da sua logo
                   ),
                 ),
               ),
             ),
-          );
-        },
+        ],
       ),
     );
   }

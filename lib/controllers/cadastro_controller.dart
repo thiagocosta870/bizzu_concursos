@@ -15,7 +15,7 @@ class CadastroController {
 
   final CadastroRepository _repository = CadastroRepository();
 
-  void finalizarCadastro(BuildContext context) async {
+  Future<void> finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       try {
         final novoUsuario = UsuarioModel(
