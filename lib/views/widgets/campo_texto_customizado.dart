@@ -6,6 +6,7 @@ class CampoTextoCustomizado extends StatelessWidget {
   final IconData icone;
   final bool isSenha;
   final String? Function(String?)? validator;
+  final double paddingBottom;
 
   const CampoTextoCustomizado({
     super.key,
@@ -14,12 +15,13 @@ class CampoTextoCustomizado extends StatelessWidget {
     required this.icone,
     this.isSenha = false,
     this.validator,
+    this.paddingBottom = 16.0,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: EdgeInsets.only(bottom: paddingBottom),
       child: TextFormField(
         controller: controller,
         obscureText: isSenha,
@@ -30,7 +32,7 @@ class CampoTextoCustomizado extends StatelessWidget {
           hintStyle: const TextStyle(color: Colors.white54),
           prefixIcon: Icon(icone, color: Colors.white54),
           filled: true,
-          fillColor: Colors.transparent, // Ajuste para a cor de fundo do seu campo
+          fillColor: Colors.transparent,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.white24),

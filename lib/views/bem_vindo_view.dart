@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'cadastro_view.dart';
+import 'package:bizzu_concursos/views/login_view.dart';
 
 class BemVindoView extends StatelessWidget {
   const BemVindoView({super.key});
@@ -56,9 +57,15 @@ class BemVindoView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginView(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF415A77),
                       padding: const EdgeInsets.symmetric(vertical: 18),
@@ -77,14 +84,11 @@ class BemVindoView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => CadastroView(),
-                        ),
+                        MaterialPageRoute(builder: (context) => CadastroView()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
