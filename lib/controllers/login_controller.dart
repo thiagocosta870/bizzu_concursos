@@ -24,6 +24,8 @@ class LoginController {
           ),
         );
         
+        emailController.clear();
+        senhaController.clear();
 
       } on FirebaseAuthException catch (e) {
         String mensagem = 'Erro ao fazer login: $e';

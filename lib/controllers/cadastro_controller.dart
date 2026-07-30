@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
 import '../models/repositories/cadastro_repository.dart';
+import 'package:bizzu_concursos/views/login_view.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -47,6 +48,13 @@ class CadastroController {
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
           ),
+        );
+
+        if (!context.mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginView()),
         );
       } catch (e) {
         debugPrint('Erro ao salvar usuário: $e');
