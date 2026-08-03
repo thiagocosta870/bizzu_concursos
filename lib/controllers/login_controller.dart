@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-
+import '../views/home_view.dart';
 class LoginController {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
@@ -23,23 +23,27 @@ class LoginController {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         emailController.clear();
         senhaController.clear();
 
+        if (!context.mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeView()),
+        );
       } on FirebaseAuthException catch (e) {
         String mensagem = 'Erro ao fazer login: $e';
-        
-        if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+
+        if (e.code == 'user-not-found' ||
+            e.code == 'wrong-password' ||
+            e.code == 'invalid-credential') {
           mensagem = 'E-mail ou senha incorretos. Tente novamente.';
         }
-        
+
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(mensagem),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(mensagem), backgroundColor: Colors.red),
         );
       }
     }
@@ -48,16 +52,20 @@ class LoginController {
   Future<void> entrarComGoogle(BuildContext context) async {
     try {
       await GoogleSignIn.instance.initialize();
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
+          .authenticate();
 
       if (googleUser == null) {
         debugPrint('Login com Google cancelado pelo usuário.');
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      
-      final clientAuth = await googleUser.authorizationClient.authorizeScopes(['email']);
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final clientAuth = await googleUser.authorizationClient.authorizeScopes([
+        'email',
+      ]);
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
@@ -74,6 +82,11 @@ class LoginController {
         ),
       );
 
+      if (!context.mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeView()),
+      );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +107,9 @@ class LoginController {
       if (result.status != LoginStatus.success) return;
 
       final AccessToken accessToken = result.accessToken!;
-      final OAuthCredential credential = FacebookAuthProvider.credential(accessToken.tokenString);
+      final OAuthCredential credential = FacebookAuthProvider.credential(
+        accessToken.tokenString,
+      );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
 
@@ -106,6 +121,11 @@ class LoginController {
         ),
       );
 
+      if (!context.mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeView()),
+      );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

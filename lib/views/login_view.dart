@@ -115,7 +115,7 @@ class _LoginViewState extends State<LoginView> {
                             child: TextButton(
                               onPressed: () {},
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: const EdgeInsets.all(5),
                               ),
                               child: const Text(
                                 'Esqueceu a senha?',
@@ -165,7 +165,6 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Componente 4: Botões Sociais
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -200,7 +199,6 @@ class _LoginViewState extends State<LoginView> {
               );
             },
           ),
-
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.6),
