@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bizzu_concursos/views/bem_vindo_view.dart';
 import 'package:bizzu_concursos/views/widgets/card_concurso.dart';
+import 'package:bizzu_concursos/views/cadastrar_concurso_view.dart';
+import 'package:bizzu_concursos/controllers/home_controller.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -13,9 +15,24 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _indiceAtual = 0;
   final usuario = FirebaseAuth.instance.currentUser;
+  final HomeController _homeController = HomeController();
+  bool _carregando = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _carregarConcursos();
+  }
 
-  List<Map<String, String>> meusConcursos = [];
+  Future<void> _carregarConcursos() async {
+    if (usuario?.uid != null) {
+      setState(() => _carregando = true);
+      await _homeController.carregarConcursos(usuario!.uid);
+      if (mounted) {
+        setState(() => _carregando = false);
+      }
+    }
+  }
 
   Future<void> _deslogar() async {
     final confirmar = await showDialog<bool>(
@@ -67,6 +84,8 @@ class _HomeViewState extends State<HomeView> {
         ? '${nomeExibicao[0].toUpperCase()}${nomeExibicao.substring(1)}'
         : nomeExibicao;
 
+    final concursos = _homeController.meusConcursos;
+
     return ListView(
       padding: const EdgeInsets.all(20.0),
       children: [
@@ -83,7 +102,7 @@ class _HomeViewState extends State<HomeView> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF415A77), 
+            color: const Color(0xFF415A77).withOpacity(0.2),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFF415A77), width: 1.5),
           ),
@@ -96,7 +115,7 @@ class _HomeViewState extends State<HomeView> {
               ),
               const SizedBox(height: 8),
               Text(
-                '${meusConcursos.length}', 
+                '${concursos.length}',
                 style: const TextStyle(
                   color: Color.fromARGB(255, 251, 239, 12),
                   fontSize: 36,
@@ -118,12 +137,25 @@ class _HomeViewState extends State<HomeView> {
         ),
         const SizedBox(height: 16),
 
-        if (meusConcursos.isEmpty)
+        if (_carregando)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 251, 239, 12),
+              ),
+            ),
+          )
+        else if (concursos.isEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 40.0),
             child: Column(
               children: [
-                Icon(Icons.assignment_add, size: 64, color: Colors.grey.withOpacity(0.4)),
+                Icon(
+                  Icons.assignment_add,
+                  size: 64,
+                  color: Colors.grey.withOpacity(0.4),
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'Você ainda não possui concursos.',
@@ -139,14 +171,70 @@ class _HomeViewState extends State<HomeView> {
             ),
           )
         else
-          ...meusConcursos.map((concurso) => CardConcurso(
-                nome: concurso['nome']!,
-                data: concurso['data']!,
-                cargo: concurso['cargo']!,
-                onEditar: () {},
-                onExcluir: () {},
-                onAbrir: () {},
-              )).toList(),
+          ...concursos
+              .map(
+                (concurso) => CardConcurso(
+                  nome: concurso.nome,
+                  data: concurso.dataProva,
+                  cargo: concurso.cargo,
+                  onEditar: () async {
+                    final atualizou = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CadastrarConcursoView(concursoParaEditar: concurso),
+                      ),
+                    );
+                    if (atualizou == true) _carregarConcursos();
+                  },
+                  onExcluir: () async {
+                    final confirmar = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        backgroundColor: const Color(0xFF0D1B2A),
+                        title: const Text(
+                          'Excluir Concurso?',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        content: const Text(
+                          'Esta ação não pode ser desfeita.',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              'Excluir',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirmar == true && usuario != null) {
+                      setState(() => _carregando = true);
+                      await _homeController.excluirConcurso(
+                        usuario!.uid,
+                        concurso.id!,
+                      );
+                      _carregarConcursos();
+                    }
+                  },
+                  onAbrir: () {},
+                ),
+              )
+              .toList(),
 
         const SizedBox(height: 80),
       ],
@@ -165,8 +253,8 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
         title: Image.asset(
           'assets/images/logo_horizontal.png',
-          height: 160,
-          width: 190,
+          height: 90,
+          width: 160,
           fit: BoxFit.contain,
         ),
         actions: [
@@ -187,7 +275,18 @@ class _HomeViewState extends State<HomeView> {
             ),
       floatingActionButton: _indiceAtual == 0
           ? FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () async {
+                final atualizou = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CadastrarConcursoView(),
+                  ),
+                );
+
+                if (atualizou == true) {
+                  _carregarConcursos();
+                }
+              },
               backgroundColor: const Color.fromARGB(255, 251, 239, 12),
               icon: const Icon(Icons.add, color: Colors.black),
               label: const Text(

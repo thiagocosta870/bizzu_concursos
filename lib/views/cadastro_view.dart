@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 
-// 1. Transformamos em StatefulWidget
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
 
@@ -12,20 +11,15 @@ class CadastroView extends StatefulWidget {
 class _CadastroViewState extends State<CadastroView> {
   final CadastroController _controller = CadastroController();
 
-  // --- VARIÁVEL DE CONTROLE DO LOADING ---
   bool _isLoading = false;
 
-  // --- FUNÇÃO AJUDANTE PARA EXECUTAR AÇÕES COM LOADING ---
   Future<void> _executarComLoading(Future<void> Function() acao) async {
-    // Liga a tela de carregamento
     setState(() {
       _isLoading = true;
     });
 
-    // Aguarda a ação terminar (comunicação com Firebase)
     await acao();
 
-    // Desliga a tela de carregamento se a tela ainda estiver aberta
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -41,10 +35,8 @@ class _CadastroViewState extends State<CadastroView> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      // 2. Envolvemos o corpo inteiro em um Stack para sobrepor o Loading
       body: Stack(
         children: [
-          // --- CONTEÚDO ORIGINAL DA SUA TELA ---
           LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
@@ -223,7 +215,6 @@ class _CadastroViewState extends State<CadastroView> {
                           ),
                           const SizedBox(height: 32),
                           ElevatedButton(
-                            // --- ATUALIZADO: Usando a função de loading ---
                             onPressed: () {
                               _executarComLoading(() async {
                                 await _controller.finalizarCadastro(context);
@@ -278,7 +269,6 @@ class _CadastroViewState extends State<CadastroView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
-                                // --- ATUALIZADO: Usando a função de loading ---
                                 onPressed: () {
                                   _executarComLoading(() async {
                                     await _controller.cadastrarComGoogle(
@@ -296,7 +286,6 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                               const SizedBox(width: 32),
                               IconButton(
-                                // --- ATUALIZADO: Usando a função de loading ---
                                 onPressed: () {
                                   _executarComLoading(() async {
                                     await _controller.cadastrarComFacebook(
@@ -323,7 +312,6 @@ class _CadastroViewState extends State<CadastroView> {
             },
           ),
 
-          // --- CAMADA ESCURA DO LOADING (Fica por cima de tudo) ---
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(

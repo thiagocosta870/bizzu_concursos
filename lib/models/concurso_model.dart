@@ -3,12 +3,14 @@ class ConcursoModel {
   String nome;
   String dataProva;
   String cargo;
+  String materias;
 
   ConcursoModel({
     this.id,
     required this.nome,
     required this.dataProva,
     required this.cargo,
+    required this.materias,
   });
 
   factory ConcursoModel.fromMap(Map<String, dynamic> map, String documentId) {
@@ -17,6 +19,7 @@ class ConcursoModel {
       nome: map['nome'] ?? '',
       dataProva: map['dataProva'] ?? '',
       cargo: map['cargo'] ?? '',
+      materias: map['materias'] ?? '',
     );
   }
 
@@ -25,6 +28,7 @@ class ConcursoModel {
       'nome': nome,
       'dataProva': dataProva,
       'cargo': cargo,
+      'materias': materias,
     };
   }
 }

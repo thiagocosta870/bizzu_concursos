@@ -5,8 +5,12 @@ class CampoTextoCustomizado extends StatelessWidget {
   final String hintText;
   final IconData icone;
   final bool isSenha;
-  final String? Function(String?)? validator;
   final double paddingBottom;
+  final String? Function(String?)? validator;
+  
+  final bool readOnly; 
+  final VoidCallback? onTap; 
+  final TextCapitalization textCapitalization; 
 
   const CampoTextoCustomizado({
     super.key,
@@ -14,8 +18,11 @@ class CampoTextoCustomizado extends StatelessWidget {
     required this.hintText,
     required this.icone,
     this.isSenha = false,
+    this.paddingBottom = 20.0, 
     this.validator,
-    this.paddingBottom = 16.0,
+    this.readOnly = false,
+    this.onTap,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   @override
@@ -25,21 +32,23 @@ class CampoTextoCustomizado extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: isSenha,
-        validator: validator,
+        readOnly: readOnly, 
+        onTap: onTap, // Ação ao clicar
+        textCapitalization: textCapitalization,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(color: Colors.white54),
-          prefixIcon: Icon(icone, color: Colors.white54),
+          labelText: hintText, 
+          labelStyle: const TextStyle(color: Colors.grey),
+          prefixIcon: Icon(icone, color: const Color(0xFF415A77)),
           filled: true,
-          fillColor: Colors.transparent,
+          fillColor: const Color(0xFF101820),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.white24),
+            borderSide: const BorderSide(color: Colors.white12),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.blueAccent),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 251, 239, 12), width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -47,9 +56,10 @@ class CampoTextoCustomizado extends StatelessWidget {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.redAccent),
+            borderSide: const BorderSide(color: Colors.redAccent, width: 2),
           ),
         ),
+        validator: validator,
       ),
     );
   }
