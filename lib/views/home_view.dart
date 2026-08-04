@@ -102,7 +102,7 @@ class _HomeViewState extends State<HomeView> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF415A77).withOpacity(0.2),
+            color: const Color(0xFF415A77),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFF415A77), width: 1.5),
           ),
@@ -154,7 +154,7 @@ class _HomeViewState extends State<HomeView> {
                 Icon(
                   Icons.assignment_add,
                   size: 64,
-                  color: Colors.grey.withOpacity(0.4),
+                  color: Colors.grey,
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -253,7 +253,7 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
         title: Image.asset(
           'assets/images/logo_horizontal.png',
-          height: 90,
+          height: 120,
           width: 160,
           fit: BoxFit.contain,
         ),

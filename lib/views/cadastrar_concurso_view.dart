@@ -140,10 +140,12 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        toolbarHeight: 90,
         centerTitle: true,
         title: Image.asset(
           'assets/images/logo_horizontal.png',
-          height: 40,
+          height: 120,
+          width: 160,
           fit: BoxFit.contain,
         ),
         iconTheme: const IconThemeData(
