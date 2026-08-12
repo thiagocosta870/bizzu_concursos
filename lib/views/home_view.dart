@@ -4,6 +4,8 @@ import 'package:bizzu_concursos/views/bem_vindo_view.dart';
 import 'package:bizzu_concursos/views/widgets/card_concurso.dart';
 import 'package:bizzu_concursos/views/cadastrar_concurso_view.dart';
 import 'package:bizzu_concursos/controllers/home_controller.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
+
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -38,7 +40,7 @@ class _HomeViewState extends State<HomeView> {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0D1B2A),
+        backgroundColor: AppCores.fundoPrimario,
         title: const Text(
           'Sair do App?',
           style: TextStyle(color: Colors.white),
@@ -117,7 +119,7 @@ class _HomeViewState extends State<HomeView> {
               Text(
                 '${concursos.length}',
                 style: const TextStyle(
-                  color: Color.fromARGB(255, 251, 239, 12),
+                  color: AppCores.amareloBizzu,
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
                 ),
@@ -142,7 +144,7 @@ class _HomeViewState extends State<HomeView> {
             child: Padding(
               padding: EdgeInsets.all(32.0),
               child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 251, 239, 12),
+                color: AppCores.amareloBizzu,
               ),
             ),
           )
@@ -191,7 +193,7 @@ class _HomeViewState extends State<HomeView> {
                     final confirmar = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        backgroundColor: const Color(0xFF0D1B2A),
+                        backgroundColor: AppCores.fundoPrimario,
                         title: const Text(
                           'Excluir Concurso?',
                           style: TextStyle(color: Colors.white),
@@ -287,7 +289,7 @@ class _HomeViewState extends State<HomeView> {
                   _carregarConcursos();
                 }
               },
-              backgroundColor: const Color.fromARGB(255, 251, 239, 12),
+              backgroundColor: AppCores.amareloBizzu,
               icon: const Icon(Icons.add, color: Colors.black),
               label: const Text(
                 'Cadastrar concurso',
@@ -304,7 +306,7 @@ class _HomeViewState extends State<HomeView> {
         ),
         child: BottomNavigationBar(
           backgroundColor: Colors.transparent,
-          selectedItemColor: const Color.fromARGB(255, 251, 239, 12),
+          selectedItemColor: AppCores.amareloBizzu,
           unselectedItemColor: Colors.grey,
           currentIndex: _indiceAtual,
           type: BottomNavigationBarType.fixed,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
+
 
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
@@ -320,7 +322,7 @@ class _CadastroViewState extends State<CadastroView> {
               child: const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromARGB(255, 251, 239, 12), // O amarelo da sua logo
+                    AppCores.amareloBizzu, // O amarelo da sua logo
                   ),
                 ),
               ),
