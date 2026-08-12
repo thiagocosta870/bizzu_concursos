@@ -318,7 +318,7 @@ class _CadastroViewState extends State<CadastroView> {
                 0.6,
               ), // Fundo preto com 60% de transparência
               child: const Center(
-                child: CircularProgressIndicator(
+                child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     Color.fromARGB(255, 251, 239, 12), // O amarelo da sua logo
                   ),

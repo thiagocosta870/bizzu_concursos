@@ -37,7 +37,7 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _deslogar() async {
     final confirmar = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF0D1B2A),
         title: const Text(
           'Sair do App?',
@@ -141,8 +141,10 @@ class _HomeViewState extends State<HomeView> {
           const Center(
             child: Padding(
               padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 251, 239, 12),
+              child: CircularProgressIndicator.adaptive(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 251, 239, 12),
+                ),
               ),
             ),
           )
@@ -151,11 +153,7 @@ class _HomeViewState extends State<HomeView> {
             padding: const EdgeInsets.only(top: 40.0),
             child: Column(
               children: [
-                Icon(
-                  Icons.assignment_add,
-                  size: 64,
-                  color: Colors.grey,
-                ),
+                Icon(Icons.assignment_add, size: 64, color: Colors.grey),
                 const SizedBox(height: 16),
                 const Text(
                   'Você ainda não possui concursos.',
@@ -190,7 +188,7 @@ class _HomeViewState extends State<HomeView> {
                   onExcluir: () async {
                     final confirmar = await showDialog<bool>(
                       context: context,
-                      builder: (context) => AlertDialog(
+                      builder: (context) => AlertDialog.adaptive(
                         backgroundColor: const Color(0xFF0D1B2A),
                         title: const Text(
                           'Excluir Concurso?',

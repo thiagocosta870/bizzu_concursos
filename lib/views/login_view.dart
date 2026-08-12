@@ -201,9 +201,9 @@ class _LoginViewState extends State<LoginView> {
           ),
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black,
               child: const Center(
-                child: CircularProgressIndicator(
+                child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     Color.fromARGB(255, 251, 239, 12),
                   ),
