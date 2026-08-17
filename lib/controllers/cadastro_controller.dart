@@ -16,6 +16,27 @@ class CadastroController {
 
   final CadastroRepository _repository = CadastroRepository();
 
+  void _mostrarAlertaVisual(
+    BuildContext context,
+    String mensagem,
+    Color corFundo,
+  ) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          mensagem,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: corFundo,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
   Future<void> finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       try {
@@ -36,18 +57,10 @@ class CadastroController {
         emailController.clear();
         senhaController.clear();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Cadastro realizado com sucesso!',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-          ),
+        _mostrarAlertaVisual(
+          context,
+          'Cadastro realizado com sucesso!',
+          Colors.green,
         );
 
         if (!context.mounted) return;
@@ -60,7 +73,8 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem =
+              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
@@ -68,36 +82,18 @@ class CadastroController {
         }
 
         debugPrint(mensagem);
-
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              mensagem,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        _mostrarAlertaVisual(context, mensagem, Colors.red);
+
+        //if (!context.mounted) return;
       } catch (e) {
         debugPrint('Erro desconhecido ao salvar usuário: $e');
 
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        _mostrarAlertaVisual(
+          context,
+          'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
+          Colors.red,
         );
       }
     } else {
@@ -144,22 +140,15 @@ class CadastroController {
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conta Google conectada com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
+      _mostrarAlertaVisual(
+        context,
+        'Conta Google conectada com sucesso!',
+        Colors.green,
       );
     } catch (e) {
       debugPrint('Erro ao cadastrar com o Google: $e');
-
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Google: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _mostrarAlertaVisual(context, 'Erro ao conectar Google: $e', Colors.red);
     }
   }
 
@@ -195,23 +184,19 @@ class CadastroController {
 
       debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
-
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conta Facebook conectada com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
+      _mostrarAlertaVisual(
+        context,
+        'Conta Facebook conectada com sucesso!',
+        Colors.green,
       );
     } catch (e) {
       debugPrint('Erro ao cadastrar com o Facebook: $e');
-
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Facebook: $e'),
-          backgroundColor: Colors.red,
-        ),
+      _mostrarAlertaVisual(
+        context,
+        'Erro ao conectar Facebook: $e',
+        Colors.red,
       );
     }
   }
