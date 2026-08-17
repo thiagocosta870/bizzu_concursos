@@ -56,8 +56,49 @@ class CadastroController {
           context,
           MaterialPageRoute(builder: (context) => const LoginView()),
         );
+      } on FirebaseAuthException catch (e) {
+        String mensagem = 'Erro ao realizar cadastro: $e';
+
+        if (e.code == 'weak-password') {
+          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+        } else if (e.code == 'email-already-in-use') {
+          mensagem = 'Já existe uma conta cadastrada com este e-mail.';
+        } else if (e.code == 'invalid-email') {
+          mensagem = 'O formato do e-mail é inválido.';
+        }
+
+        debugPrint(mensagem);
+
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              mensagem,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
       } catch (e) {
-        debugPrint('Erro ao salvar usuário: $e');
+        debugPrint('Erro desconhecido ao salvar usuário: $e');
+
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } else {
       debugPrint('Bloqueado: O usuário preencheu algo errado.');
