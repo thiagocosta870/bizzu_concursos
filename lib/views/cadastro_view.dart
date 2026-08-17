@@ -129,8 +129,8 @@ class _CadastroViewState extends State<CadastroView> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
+                            validator: (textoDigitado) {
+                              if (textoDigitado == null || textoDigitado.trim().isEmpty) {
                                 return 'Por favor, informe seu nome completo.';
                               }
                               return null;
@@ -169,11 +169,11 @@ class _CadastroViewState extends State<CadastroView> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
+                            validator: (textoDigitado) {
+                              if (textoDigitado == null || textoDigitado.trim().isEmpty) {
                                 return 'Por favor, informe seu e-mail.';
-                              } else if (!value.contains('@') ||
-                                  !value.contains('.')) {
+                              } else if (!textoDigitado.contains('@') ||
+                                  !textoDigitado.contains('.')) {
                                 return 'Informe um e-mail válido (ex: seu@email.com).';
                               }
                               return null;
@@ -225,10 +225,10 @@ class _CadastroViewState extends State<CadastroView> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
+                            validator: (textoDigitado) {
+                              if (textoDigitado == null || textoDigitado.trim().isEmpty) {
                                 return 'Por favor, crie uma senha.';
-                              } else if (value.length < 6) {
+                              } else if (textoDigitado.length < 6) {
                                 return 'A senha deve ter pelo menos 6 caracteres.';
                               }
                               return null;
