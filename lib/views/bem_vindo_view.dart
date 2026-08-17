@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'cadastro_view.dart';
 import 'package:bizzu_concursos/views/login_view.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
 
 class BemVindoView extends StatelessWidget {
   const BemVindoView({super.key});
@@ -22,7 +23,7 @@ class BemVindoView extends StatelessWidget {
                   color: const Color(0xFF02080C),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color.fromARGB(255, 251, 239, 12),
+                    color: AppCores.amareloBizzu,
                     width: 1.5,
                   ),
                 ),

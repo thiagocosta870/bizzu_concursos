@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'views/bem_vindo_view.dart';
 import 'firebase_options.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +25,7 @@ class BizzuApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF0D1B2A),
+        scaffoldBackgroundColor: AppCores.fundoPrimario,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF415A77),

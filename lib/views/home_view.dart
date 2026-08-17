@@ -4,6 +4,7 @@ import 'package:bizzu_concursos/views/bem_vindo_view.dart';
 import 'package:bizzu_concursos/views/widgets/card_concurso.dart';
 import 'package:bizzu_concursos/views/cadastrar_concurso_view.dart';
 import 'package:bizzu_concursos/controllers/home_controller.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -37,8 +38,9 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _deslogar() async {
     final confirmar = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog.adaptive(
-        backgroundColor: const Color(0xFF0D1B2A),
+      // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
+      builder: (context) => AlertDialog.adaptive( 
+        backgroundColor: AppCores.fundoPrimario,
         title: const Text(
           'Sair do App?',
           style: TextStyle(color: Colors.white),
@@ -117,7 +119,7 @@ class _HomeViewState extends State<HomeView> {
               Text(
                 '${concursos.length}',
                 style: const TextStyle(
-                  color: Color.fromARGB(255, 251, 239, 12),
+                  color: AppCores.amareloBizzu,
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
                 ),
@@ -141,26 +143,25 @@ class _HomeViewState extends State<HomeView> {
           const Center(
             child: Padding(
               padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator.adaptive(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Color.fromARGB(255, 251, 239, 12),
-                ),
+              // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
+              child: CircularProgressIndicator.adaptive( 
+                valueColor: AlwaysStoppedAnimation<Color>(AppCores.amareloBizzu),
               ),
             ),
           )
         else if (concursos.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 40.0),
             child: Column(
               children: [
                 Icon(Icons.assignment_add, size: 64, color: Colors.grey),
-                const SizedBox(height: 16),
-                const Text(
+                SizedBox(height: 16),
+                Text(
                   'Você ainda não possui concursos.',
                   style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                SizedBox(height: 8),
+                Text(
                   'Clique em "Cadastrar concurso" para começar!',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                   textAlign: TextAlign.center,
@@ -188,8 +189,9 @@ class _HomeViewState extends State<HomeView> {
                   onExcluir: () async {
                     final confirmar = await showDialog<bool>(
                       context: context,
-                      builder: (context) => AlertDialog.adaptive(
-                        backgroundColor: const Color(0xFF0D1B2A),
+                      // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
+                      builder: (context) => AlertDialog.adaptive( 
+                        backgroundColor: AppCores.fundoPrimario,
                         title: const Text(
                           'Excluir Concurso?',
                           style: TextStyle(color: Colors.white),
@@ -285,7 +287,7 @@ class _HomeViewState extends State<HomeView> {
                   _carregarConcursos();
                 }
               },
-              backgroundColor: const Color.fromARGB(255, 251, 239, 12),
+              backgroundColor: AppCores.amareloBizzu,
               icon: const Icon(Icons.add, color: Colors.black),
               label: const Text(
                 'Cadastrar concurso',
@@ -302,7 +304,7 @@ class _HomeViewState extends State<HomeView> {
         ),
         child: BottomNavigationBar(
           backgroundColor: Colors.transparent,
-          selectedItemColor: const Color.fromARGB(255, 251, 239, 12),
+          selectedItemColor: AppCores.amareloBizzu,
           unselectedItemColor: Colors.grey,
           currentIndex: _indiceAtual,
           type: BottomNavigationBarType.fixed,

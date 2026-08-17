@@ -3,6 +3,7 @@ import 'package:bizzu_concursos/controllers/login_controller.dart';
 import 'package:bizzu_concursos/views/widgets/campo_texto_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_rede_social.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -205,7 +206,7 @@ class _LoginViewState extends State<LoginView> {
               child: const Center(
                 child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromARGB(255, 251, 239, 12),
+                    AppCores.amareloBizzu,
                   ),
                 ),
               ),

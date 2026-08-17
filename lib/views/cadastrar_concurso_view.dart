@@ -4,6 +4,8 @@ import 'package:bizzu_concursos/controllers/cadastro_concurso_controller.dart';
 import 'package:bizzu_concursos/models/concurso_model.dart';
 import 'package:bizzu_concursos/views/widgets/campo_texto_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_customizado.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
+
 
 class CadastrarConcursoView extends StatefulWidget {
   final ConcursoModel? concursoParaEditar;
@@ -55,7 +57,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color.fromARGB(255, 251, 239, 12),
+              primary: AppCores.amareloBizzu,
               onPrimary: Colors.black,
               surface: Color(0xFF101820),
               onSurface: Colors.white,
@@ -149,7 +151,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
           fit: BoxFit.contain,
         ),
         iconTheme: const IconThemeData(
-          color: Color.fromARGB(255, 251, 239, 12),
+          color: AppCores.amareloBizzu,
         ),
       ),
       body: SingleChildScrollView(
@@ -225,12 +227,12 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                 },
                 icon: const Icon(
                   Icons.file_upload_outlined,
-                  color: Color.fromARGB(255, 251, 239, 12),
+                  color: AppCores.amareloBizzu,
                 ),
                 label: const Text(
                   'Importar Edital',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 251, 239, 12),
+                    color: AppCores.amareloBizzu,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -238,7 +240,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(
-                    color: Color.fromARGB(255, 251, 239, 12),
+                    color: AppCores.amareloBizzu,
                     width: 1.5,
                   ),
                   shape: RoundedRectangleBorder(
@@ -253,7 +255,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                   ? const Center(
                       child: CircularProgressIndicator.adaptive(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 251, 239, 12),
+                          AppCores.amareloBizzu,
                         ),
                       ),
                     )

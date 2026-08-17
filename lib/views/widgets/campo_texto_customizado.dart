@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:bizzu_concursos/theme/appCores.dart';
+
 
 class CampoTextoCustomizado extends StatelessWidget {
   final TextEditingController controller;
@@ -48,7 +50,7 @@ class CampoTextoCustomizado extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color.fromARGB(255, 251, 239, 12), width: 2),
+            borderSide: const BorderSide(color: AppCores.amareloBizzu, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
