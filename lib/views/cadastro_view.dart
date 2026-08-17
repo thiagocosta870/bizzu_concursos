@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 
-
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
 
@@ -33,6 +32,13 @@ class _CadastroViewState extends State<CadastroView> {
         _isLoading = false;
       });
     }
+  }
+
+  InputBorder _criarBorda({required Color cor}) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(color: cor),
+      borderRadius: BorderRadius.circular(12),
+    );
   }
 
   @override
@@ -108,29 +114,16 @@ class _CadastroViewState extends State<CadastroView> {
                                 Icons.person,
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                              enabledBorder: _criarBorda(cor: Colors.grey),
+                              focusedBorder: _criarBorda(
+                                cor: const Color(0xFF415A77),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF415A77),
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              errorBorder: _criarBorda(cor: Colors.red),
+                              focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
                             validator: (textoDigitado) {
-                              if (textoDigitado == null || textoDigitado.trim().isEmpty) {
+                              if (textoDigitado == null ||
+                                  textoDigitado.trim().isEmpty) {
                                 return 'Por favor, informe seu nome completo.';
                               }
                               return null;
@@ -148,29 +141,16 @@ class _CadastroViewState extends State<CadastroView> {
                                 Icons.email,
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                              enabledBorder: _criarBorda(cor: Colors.grey),
+                              focusedBorder: _criarBorda(
+                                cor: const Color(0xFF415A77),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF415A77),
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              errorBorder: _criarBorda(cor: Colors.red),
+                              focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
                             validator: (textoDigitado) {
-                              if (textoDigitado == null || textoDigitado.trim().isEmpty) {
+                              if (textoDigitado == null ||
+                                  textoDigitado.trim().isEmpty) {
                                 return 'Por favor, informe seu e-mail.';
                               } else if (!textoDigitado.contains('@') ||
                                   !textoDigitado.contains('.')) {
@@ -204,29 +184,16 @@ class _CadastroViewState extends State<CadastroView> {
                                   color: Colors.grey,
                                 ),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                              enabledBorder: _criarBorda(cor: Colors.grey),
+                              focusedBorder: _criarBorda(
+                                cor: const Color(0xFF415A77),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF415A77),
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              errorBorder: _criarBorda(cor: Colors.red),
+                              focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
                             validator: (textoDigitado) {
-                              if (textoDigitado == null || textoDigitado.trim().isEmpty) {
+                              if (textoDigitado == null ||
+                                  textoDigitado.trim().isEmpty) {
                                 return 'Por favor, crie uma senha.';
                               } else if (textoDigitado.length < 6) {
                                 return 'A senha deve ter pelo menos 6 caracteres.';
@@ -335,13 +302,11 @@ class _CadastroViewState extends State<CadastroView> {
 
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(
-                0.6,
-              ), // Fundo preto com 60% de transparência
+              color: Colors.black.withOpacity(0.6),
               child: const Center(
                 child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    AppCores.amareloBizzu, // O amarelo da sua logo
+                    AppCores.amareloBizzu,
                   ),
                 ),
               ),
