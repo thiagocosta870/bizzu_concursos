@@ -15,6 +15,8 @@ class _CadastroViewState extends State<CadastroView> {
 
   bool _isLoading = false;
 
+  bool _ocultarSenha = true;
+
   Future<void> _executarComLoading(Future<void> Function() acao) async {
     setState(() {
       _isLoading = true;
@@ -176,7 +178,7 @@ class _CadastroViewState extends State<CadastroView> {
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _controller.senhaController,
-                            obscureText: true,
+                            obscureText: _ocultarSenha,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Senha',
@@ -184,6 +186,19 @@ class _CadastroViewState extends State<CadastroView> {
                               prefixIcon: const Icon(
                                 Icons.lock,
                                 color: Colors.grey,
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _ocultarSenha = !_ocultarSenha;
+                                  });
+                                },
+                                icon: Icon(
+                                  _ocultarSenha
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.grey,
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -320,7 +335,7 @@ class _CadastroViewState extends State<CadastroView> {
                 0.6,
               ), // Fundo preto com 60% de transparência
               child: const Center(
-                child: CircularProgressIndicator(
+                child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     AppCores.amareloBizzu, // O amarelo da sua logo
                   ),

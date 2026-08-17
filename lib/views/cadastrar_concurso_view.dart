@@ -253,7 +253,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
               _estaCarregando
                   ? const Center(
-                      child: CircularProgressIndicator(
+                      child: CircularProgressIndicator.adaptive(
                         valueColor: AlwaysStoppedAnimation<Color>(
                           AppCores.amareloBizzu,
                         ),

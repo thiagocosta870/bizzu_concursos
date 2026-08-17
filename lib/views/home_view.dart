@@ -6,7 +6,6 @@ import 'package:bizzu_concursos/views/cadastrar_concurso_view.dart';
 import 'package:bizzu_concursos/controllers/home_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 
-
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -39,7 +38,8 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _deslogar() async {
     final confirmar = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
+      builder: (context) => AlertDialog.adaptive( 
         backgroundColor: AppCores.fundoPrimario,
         title: const Text(
           'Sair do App?',
@@ -143,28 +143,25 @@ class _HomeViewState extends State<HomeView> {
           const Center(
             child: Padding(
               padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator(
-                color: AppCores.amareloBizzu,
+              // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
+              child: CircularProgressIndicator.adaptive( 
+                valueColor: AlwaysStoppedAnimation<Color>(AppCores.amareloBizzu),
               ),
             ),
           )
         else if (concursos.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 40.0),
             child: Column(
               children: [
-                Icon(
-                  Icons.assignment_add,
-                  size: 64,
-                  color: Colors.grey,
-                ),
-                const SizedBox(height: 16),
-                const Text(
+                Icon(Icons.assignment_add, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text(
                   'Você ainda não possui concursos.',
                   style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                SizedBox(height: 8),
+                Text(
                   'Clique em "Cadastrar concurso" para começar!',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                   textAlign: TextAlign.center,
@@ -192,7 +189,8 @@ class _HomeViewState extends State<HomeView> {
                   onExcluir: () async {
                     final confirmar = await showDialog<bool>(
                       context: context,
-                      builder: (context) => AlertDialog(
+                      // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
+                      builder: (context) => AlertDialog.adaptive( 
                         backgroundColor: AppCores.fundoPrimario,
                         title: const Text(
                           'Excluir Concurso?',

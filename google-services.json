@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "445489126917",
+    "project_id": "bizzu-concursos",
+    "storage_bucket": "bizzu-concursos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445489126917:android:330ed78b4eb21c197d466c",
+        "android_client_info": {
+          "package_name": "com.example.bizzu_concursos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "445489126917-ns59k4hjsdci6bkcco8aaa6r284ca6lf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bizzu_concursos",
+            "certificate_hash": "7dbc052c6a39fe9687ef1b12ad6b57ca2ba68711"
+          }
+        },
+        {
+          "client_id": "445489126917-n4nag4lrq01l758br305rb2d2eh769mc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiKHN2WrpUQsHl1FWtnMZfTsZY0nmrV0k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "445489126917-n4nag4lrq01l758br305rb2d2eh769mc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
