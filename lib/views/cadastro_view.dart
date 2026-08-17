@@ -17,6 +17,10 @@ class _CadastroViewState extends State<CadastroView> {
 
   bool _ocultarSenha = true;
 
+  static const double espacoGrande = 35.0;
+  static const double espacoMedio = 32.0;
+  static const double espacoPequeno = 16.0;
+
   Future<void> _executarComLoading(Future<void> Function() acao) async {
     setState(() {
       _isLoading = true;
@@ -83,7 +87,7 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 35),
+                          const SizedBox(height: espacoGrande),
                           const Text(
                             'Crie sua conta',
                             style: TextStyle(
@@ -93,7 +97,7 @@ class _CadastroViewState extends State<CadastroView> {
                             ),
                             textAlign: TextAlign.left,
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: espacoMedio),
                           TextFormField(
                             controller: _controller.nomeController,
                             style: const TextStyle(color: Colors.white),
@@ -132,7 +136,7 @@ class _CadastroViewState extends State<CadastroView> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: espacoPequeno),
                           TextFormField(
                             controller: _controller.emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -175,7 +179,7 @@ class _CadastroViewState extends State<CadastroView> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: espacoPequeno),
                           TextFormField(
                             controller: _controller.senhaController,
                             obscureText: _ocultarSenha,
@@ -230,7 +234,7 @@ class _CadastroViewState extends State<CadastroView> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: espacoMedio),
                           ElevatedButton(
                             onPressed: () {
                               _executarComLoading(() async {
@@ -252,7 +256,7 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: espacoGrande),
                           Row(
                             children: [
                               const Expanded(
@@ -281,7 +285,7 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: espacoMedio),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -301,7 +305,7 @@ class _CadastroViewState extends State<CadastroView> {
                                   minimumSize: const Size(60, 40),
                                 ),
                               ),
-                              const SizedBox(width: 32),
+                              const SizedBox(width: espacoGrande),
                               IconButton(
                                 onPressed: () {
                                   _executarComLoading(() async {
