@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
@@ -137,12 +136,11 @@ class CadastroController {
           .signInWithCredential(credential);
       String uid = userCredential.user?.uid ?? '';
 
-      await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
-        'uid': uid,
-        'nome': userCredential.user?.displayName ?? 'Usuário',
-        'email': userCredential.user?.email ?? '',
-        'criadoEm': Timestamp.now(),
-      }, SetOptions(merge: true));
+      await _repository.salvarUsuarioNoFirestore(
+        uid,
+        userCredential.user?.displayName ?? 'Usuário',
+        userCredential.user?.email ?? '',
+      );
 
       debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
@@ -190,12 +188,11 @@ class CadastroController {
           .signInWithCredential(credential);
       String uid = userCredential.user?.uid ?? '';
 
-      await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
-        'uid': uid,
-        'nome': userCredential.user?.displayName ?? 'Usuário',
-        'email': userCredential.user?.email ?? '',
-        'criadoEm': Timestamp.now(),
-      }, SetOptions(merge: true));
+      await _repository.salvarUsuarioNoFirestore(
+        uid,
+        userCredential.user?.displayName ?? 'Usuário',
+        userCredential.user?.email ?? '',
+      );
 
       debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');

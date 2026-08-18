@@ -7,7 +7,6 @@ class CadastroRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> cadastrarUsuarioComEmail(UsuarioModel usuario) async {
-    
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
       email: usuario.email,
       password: usuario.senha,
@@ -15,7 +14,6 @@ class CadastroRepository {
 
     String uid = userCredential.user!.uid;
 
-    
     await _firestore.collection('usuarios').doc(uid).set({
       'uid': uid,
       'nome': usuario.nome,
@@ -24,5 +22,19 @@ class CadastroRepository {
     });
 
     return uid;
+  }
+
+  // Adicione este método dentro do seu CadastroRepository
+  Future<void> salvarUsuarioNoFirestore(
+    String uid,
+    String nome,
+    String email,
+  ) async {
+    await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
+      'uid': uid,
+      'nome': nome,
+      'email': email,
+      'criadoEm': Timestamp.now(),
+    }, SetOptions(merge: true));
   }
 }
