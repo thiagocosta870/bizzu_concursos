@@ -24,7 +24,6 @@ class CadastroRepository {
     return uid;
   }
 
-  // Adicione este método dentro do seu CadastroRepository
   Future<void> salvarUsuarioNoFirestore(
     String uid,
     String nome,
