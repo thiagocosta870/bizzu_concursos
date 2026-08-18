@@ -6,6 +6,30 @@ import 'package:bizzu_concursos/theme/appCores.dart';
 class BemVindoView extends StatelessWidget {
   const BemVindoView({super.key});
 
+  Widget _criarBotaoAcesso({
+    required String texto,
+    required Color corFundo,
+    required Color corTexto,
+    required VoidCallback aoPressionar,
+  }) {
+    return ElevatedButton(
+      onPressed: aoPressionar,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: corFundo,
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(
+        texto,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: corTexto,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,10 +46,7 @@ class BemVindoView extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF02080C),
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppCores.amareloBizzu,
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: AppCores.amareloBizzu, width: 1.5),
                 ),
                 child: ClipOval(
                   child: Image.asset(
@@ -58,8 +79,11 @@ class BemVindoView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
+                  _criarBotaoAcesso(
+                    texto: 'Login',
+                    corFundo: const Color(0xFF415A77),
+                    corTexto: Colors.white,
+                    aoPressionar: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -67,46 +91,22 @@ class BemVindoView extends StatelessWidget {
                         ),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF415A77),
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
+
                   const SizedBox(height: 16),
 
-                  ElevatedButton(
-                    onPressed: () {
+                  _criarBotaoAcesso(
+                    texto: 'Cadastrar',
+                    corFundo: const Color(0xFF1B263B),
+                    corTexto: const Color(0xFFE0E1DD),
+                    aoPressionar: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CadastroView()),
+                        MaterialPageRoute(
+                          builder: (context) => const CadastroView(),
+                        ),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1B263B),
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Cadastrar',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE0E1DD),
-                      ),
-                    ),
                   ),
                 ],
               ),
