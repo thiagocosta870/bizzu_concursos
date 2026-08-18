@@ -5,6 +5,9 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
 import '../models/repositories/cadastro_repository.dart';
 import 'package:bizzu_concursos/views/login_view.dart';
+import '../utils/i_alerta_servico.dart';
+import '../utils/alerta_snackbar.dart';
+import '../utils/alerta_dialog.dart'; 
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -15,8 +18,19 @@ class CadastroController {
 
   final CadastroRepository _repository;
 
-  CadastroController({CadastroRepository? repository})
-    : _repository = repository ?? CadastroRepository();
+
+  final IAlertaServico _alertaServico;
+
+  CadastroController({
+    CadastroRepository? repository,
+    IAlertaServico? alertaServico,
+  })  : _repository = repository ?? CadastroRepository(),
+        _alertaServico = alertaServico ?? AlertaSnackBar(); //Se quiser posso trocar para (AlertaDialog, que vai funcionar perfeitamente, respeitando o Liskov Substitution) 
+
+  void _mostrarAlertaVisual(BuildContext context, String mensagem, Color corFundo) {
+    bool isErro = corFundo == Colors.red;
+    _alertaServico.exibir(context, mensagem, isErro: isErro);
+  }
 
   Future<void> finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
@@ -38,19 +52,7 @@ class CadastroController {
         emailController.clear();
         senhaController.clear();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Cadastro realizado com sucesso!',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        _mostrarAlertaVisual(context, 'Cadastro realizado com sucesso!', Colors.green);
 
         if (!context.mounted) return;
 
@@ -62,8 +64,7 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem =
-              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
@@ -71,36 +72,14 @@ class CadastroController {
         }
 
         debugPrint(mensagem);
-
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              mensagem,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        _mostrarAlertaVisual(context, mensagem, Colors.red);
+        
       } catch (e) {
         debugPrint('Erro desconhecido ao salvar usuário: $e');
-
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        _mostrarAlertaVisual(
+          context,
+          'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
+          Colors.red,
         );
       }
     } else {
@@ -112,16 +91,14 @@ class CadastroController {
     try {
       await GoogleSignIn.instance.initialize();
 
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
-          .authenticate();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
 
       if (googleUser == null) {
         debugPrint('Login com Google cancelado pelo usuário.');
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       final clientAuth = await googleUser.authorizationClient.authorizeScopes([
         'email',
@@ -132,8 +109,7 @@ class CadastroController {
         accessToken: clientAuth.accessToken,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       String uid = userCredential.user?.uid ?? '';
 
       await _repository.salvarUsuarioNoFirestore(
@@ -145,23 +121,11 @@ class CadastroController {
       debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conta Google conectada com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      _mostrarAlertaVisual(context, 'Conta Google conectada com sucesso!', Colors.green);
+      
     } catch (e) {
       debugPrint('Erro ao cadastrar com o Google: $e');
-
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Google: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _mostrarAlertaVisual(context, 'Erro ao conectar Google: $e', Colors.red);
     }
   }
 
@@ -172,9 +136,7 @@ class CadastroController {
       );
 
       if (result.status != LoginStatus.success) {
-        debugPrint(
-          'Login com Facebook cancelado ou falhou. Status: ${result.status}',
-        );
+        debugPrint('Login com Facebook cancelado ou falhou. Status: ${result.status}');
         return;
       }
 
@@ -184,8 +146,7 @@ class CadastroController {
         accessToken.tokenString,
       );
 
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       String uid = userCredential.user?.uid ?? '';
 
       await _repository.salvarUsuarioNoFirestore(
@@ -197,23 +158,11 @@ class CadastroController {
       debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conta Facebook conectada com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      _mostrarAlertaVisual(context, 'Conta Facebook conectada com sucesso!', Colors.green);
+      
     } catch (e) {
       debugPrint('Erro ao cadastrar com o Facebook: $e');
-
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Facebook: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _mostrarAlertaVisual(context, 'Erro ao conectar Facebook: $e', Colors.red);
     }
   }
 
