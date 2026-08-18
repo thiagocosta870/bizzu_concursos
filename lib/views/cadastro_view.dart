@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
-
+import 'package:bizzu_concursos/utils/validadores.dart';
 
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
@@ -125,12 +125,7 @@ class _CadastroViewState extends State<CadastroView> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Por favor, informe seu nome completo.';
-                              }
-                              return null;
-                            },
+                            validator: ValidadorNome().validar,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -165,15 +160,7 @@ class _CadastroViewState extends State<CadastroView> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Por favor, informe seu e-mail.';
-                              } else if (!value.contains('@') ||
-                                  !value.contains('.')) {
-                                return 'Informe um e-mail válido (ex: seu@email.com).';
-                              }
-                              return null;
-                            },
+                            validator: ValidadorEmail().validar,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -221,14 +208,7 @@ class _CadastroViewState extends State<CadastroView> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Por favor, crie uma senha.';
-                              } else if (value.length < 6) {
-                                return 'A senha deve ter pelo menos 6 caracteres.';
-                              }
-                              return null;
-                            },
+                            validator: ValidadorSenha().validar,
                           ),
                           const SizedBox(height: 32),
                           ElevatedButton(
