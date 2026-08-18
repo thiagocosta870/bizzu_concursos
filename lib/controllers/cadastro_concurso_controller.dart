@@ -10,14 +10,16 @@ class CadastroConcursoController {
     required String dataProva,
     required String materias,
     required String usuarioId,
-  }) async {
-    final novoConcurso = ConcursoModel(
-      nome: nome,
-      cargo: cargo,
-      dataProva: dataProva,
-      materias: materias,
+  }) {
+    return _repository.salvarConcurso(
+      ConcursoModel(
+        nome: nome,
+        cargo: cargo,
+        dataProva: dataProva,
+        materias: materias,
+      ),
+      usuarioId,
     );
-    return await _repository.salvarConcurso(novoConcurso, usuarioId);
   }
 
   Future<bool> atualizarConcurso({
@@ -27,14 +29,16 @@ class CadastroConcursoController {
     required String dataProva,
     required String materias,
     required String usuarioId,
-  }) async {
-    final concursoAtualizado = ConcursoModel(
-      id: id,
-      nome: nome,
-      cargo: cargo,
-      dataProva: dataProva,
-      materias: materias,
+  }) {
+    return _repository.atualizarConcurso(
+      ConcursoModel(
+        id: id,
+        nome: nome,
+        cargo: cargo,
+        dataProva: dataProva,
+        materias: materias,
+      ),
+      usuarioId,
     );
-    return await _repository.atualizarConcurso(concursoAtualizado, usuarioId);
   }
 }
