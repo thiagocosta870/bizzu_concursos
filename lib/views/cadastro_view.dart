@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
-
+import 'package:bizzu_concursos/strategies/auth_strategy.dart';
+import 'package:bizzu_concursos/views/login_view.dart';
 
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
@@ -12,9 +13,7 @@ class CadastroView extends StatefulWidget {
 
 class _CadastroViewState extends State<CadastroView> {
   final CadastroController _controller = CadastroController();
-
   bool _isLoading = false;
-
   bool _ocultarSenha = true;
 
   Future<void> _executarComLoading(Future<void> Function() acao) async {
@@ -288,8 +287,10 @@ class _CadastroViewState extends State<CadastroView> {
                               IconButton(
                                 onPressed: () {
                                   _executarComLoading(() async {
-                                    await _controller.cadastrarComGoogle(
+                                    await _controller.autenticarComRedeSocial(
                                       context,
+                                      AuthGoogleStrategy(),
+                                      'Google',
                                     );
                                   });
                                 },
@@ -305,8 +306,10 @@ class _CadastroViewState extends State<CadastroView> {
                               IconButton(
                                 onPressed: () {
                                   _executarComLoading(() async {
-                                    await _controller.cadastrarComFacebook(
+                                    await _controller.autenticarComRedeSocial(
                                       context,
+                                      AuthFacebookStrategy(),
+                                      'Facebook',
                                     );
                                   });
                                 },
@@ -328,16 +331,13 @@ class _CadastroViewState extends State<CadastroView> {
               );
             },
           ),
-
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(
-                0.6,
-              ), // Fundo preto com 60% de transparência
+              color: Colors.black.withOpacity(0.6),
               child: const Center(
                 child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    AppCores.amareloBizzu, // O amarelo da sua logo
+                    AppCores.amareloBizzu,
                   ),
                 ),
               ),

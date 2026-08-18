@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
 import '../models/repositories/cadastro_repository.dart';
 import 'package:bizzu_concursos/views/login_view.dart';
+import '../strategies/auth_strategy.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -60,7 +59,8 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem =
+              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
@@ -105,34 +105,17 @@ class CadastroController {
     }
   }
 
-  Future<void> cadastrarComGoogle(BuildContext context) async {
+  Future<void> autenticarComRedeSocial(
+    BuildContext context,
+    AuthStrategy estrategia,
+    String nomeProvedor,
+  ) async {
     try {
-      await GoogleSignIn.instance.initialize();
-
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
-          .authenticate();
-
-      if (googleUser == null) {
-        debugPrint('Login com Google cancelado pelo usuário.');
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final clientAuth = await googleUser.authorizationClient.authorizeScopes([
-        'email',
-      ]);
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: clientAuth.accessToken,
-      );
-
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      // 1. Executa a estratégia injetada (Google ou Facebook)
+      UserCredential userCredential = await estrategia.autenticar();
       String uid = userCredential.user?.uid ?? '';
 
+      // 2. Salva no banco de dados (Lógica direta do Firestore)
       await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
         'uid': uid,
         'nome': userCredential.user?.displayName ?? 'Usuário',
@@ -140,76 +123,22 @@ class CadastroController {
         'criadoEm': Timestamp.now(),
       }, SetOptions(merge: true));
 
-      debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
+      debugPrint('--- SUCESSO COMPLETO COM $nomeProvedor! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conta Google conectada com sucesso!'),
+        SnackBar(
+          content: Text('Conta $nomeProvedor conectada com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      debugPrint('Erro ao cadastrar com o Google: $e');
-
+      debugPrint('Erro ao cadastrar com $nomeProvedor: $e');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao conectar Google: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  Future<void> cadastrarComFacebook(BuildContext context) async {
-    try {
-      final LoginResult result = await FacebookAuth.instance.login(
-        permissions: ['email', 'public_profile'],
-      );
-
-      if (result.status != LoginStatus.success) {
-        debugPrint(
-          'Login com Facebook cancelado ou falhou. Status: ${result.status}',
-        );
-        return;
-      }
-
-      final AccessToken accessToken = result.accessToken!;
-
-      final OAuthCredential credential = FacebookAuthProvider.credential(
-        accessToken.tokenString,
-      );
-
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
-      String uid = userCredential.user?.uid ?? '';
-
-      await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
-        'uid': uid,
-        'nome': userCredential.user?.displayName ?? 'Usuário',
-        'email': userCredential.user?.email ?? '',
-        'criadoEm': Timestamp.now(),
-      }, SetOptions(merge: true));
-
-      debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
-      debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
-
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Conta Facebook conectada com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      debugPrint('Erro ao cadastrar com o Facebook: $e');
-
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Facebook: $e'),
+          content: Text('Erro ao conectar $nomeProvedor.'),
           backgroundColor: Colors.red,
         ),
       );
