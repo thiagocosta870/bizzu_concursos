@@ -14,7 +14,10 @@ class CadastroController {
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
 
-  final CadastroRepository _repository = CadastroRepository();
+  final CadastroRepository _repository;
+
+  CadastroController({CadastroRepository? repository})
+    : _repository = repository ?? CadastroRepository();
 
   Future<void> finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
@@ -60,7 +63,8 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem =
+              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
