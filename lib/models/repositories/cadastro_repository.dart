@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../usuario_model.dart';
+import 'IAuthenticationRepository.dart';
+import 'IUserPersistenceRepository.dart';
 
-class CadastroRepository {
+class CadastroRepository
+    implements IAuthenticationRepository, IUserPersistenceRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  @override
   Future<String> cadastrarUsuarioComEmail(UsuarioModel usuario) async {
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
       email: usuario.email,
@@ -24,6 +28,7 @@ class CadastroRepository {
     return uid;
   }
 
+  @override
   Future<void> salvarUsuarioNoFirestore(
     String uid,
     String nome,
