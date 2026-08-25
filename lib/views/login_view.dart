@@ -22,6 +22,81 @@ class _LoginViewState extends State<LoginView> {
     if (mounted) setState(() => _isLoading = false);
   }
 
+  Widget _buildLogo() {
+    return Center(
+      child: Container(
+        width: 180,
+        height: 180,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: const Color(0xFF02080C),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: const Color.fromARGB(255, 251, 239, 12),
+            width: 1.5,
+          ),
+        ),
+        child: ClipOval(
+          child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDivisorSociais() {
+    return Row(
+      children: [
+        const Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'ou entre com',
+            style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+          ),
+        ),
+        const Expanded(child: Divider(color: Colors.grey, thickness: 0.5)),
+      ],
+    );
+  }
+
+  Widget _buildBotoesSociais(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        BotaoSocial(
+          icone: Icons.g_mobiledata,
+          corIcone: Colors.red,
+          onPressed: () {
+            _executarComLoading(() async {
+              await _controller.entrarComGoogle(context);
+            });
+          },
+        ),
+        const SizedBox(width: 32),
+        BotaoSocial(
+          icone: Icons.facebook,
+          corIcone: Colors.blue.shade800,
+          onPressed: () {
+            _executarComLoading(() async {
+              await _controller.entrarComFacebook(context);
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.black,
+      child: const Center(
+        child: CircularProgressIndicator.adaptive(
+          valueColor: AlwaysStoppedAnimation<Color>(AppCores.amareloBizzu),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,32 +123,7 @@ class _LoginViewState extends State<LoginView> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Center(
-                            child: Container(
-                              width: 180,
-                              height: 180,
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF02080C),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color.fromARGB(
-                                    255,
-                                    251,
-                                    239,
-                                    12,
-                                  ),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'assets/images/logo.png',
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
+                          _buildLogo(),
                           const SizedBox(height: 35),
                           const Text(
                             'Acesse sua conta',
@@ -136,62 +186,9 @@ class _LoginViewState extends State<LoginView> {
                           ),
 
                           const SizedBox(height: 40),
-                          Row(
-                            children: [
-                              const Expanded(
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.5,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Text(
-                                  'ou entre com',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              const Expanded(
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
+                          _buildDivisorSociais(),
                           const SizedBox(height: 24),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              BotaoSocial(
-                                icone: Icons.g_mobiledata,
-                                corIcone: Colors.red,
-                                onPressed: () {
-                                  _executarComLoading(() async {
-                                    await _controller.entrarComGoogle(context);
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 32),
-                              BotaoSocial(
-                                icone: Icons.facebook,
-                                corIcone: Colors.blue.shade800,
-                                onPressed: () {
-                                  _executarComLoading(() async {
-                                    await _controller.entrarComFacebook(
-                                      context,
-                                    );
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
+                          _buildBotoesSociais(context),
                         ],
                       ),
                     ),
@@ -200,17 +197,7 @@ class _LoginViewState extends State<LoginView> {
               );
             },
           ),
-          if (_isLoading)
-            Container(
-              color: Colors.black,
-              child: const Center(
-                child: CircularProgressIndicator.adaptive(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppCores.amareloBizzu,
-                  ),
-                ),
-              ),
-            ),
+          if (_isLoading) _buildLoadingOverlay(),
         ],
       ),
     );

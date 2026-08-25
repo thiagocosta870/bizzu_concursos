@@ -35,20 +35,17 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-  Future<void> _deslogar() async {
-    final confirmar = await showDialog<bool>(
+  Future<bool?> _exibirDialogoConfirmacao({
+    required String titulo,
+    required String subtitulo,
+    required String textoBotaoConfirmar,
+  }) {
+    return showDialog<bool>(
       context: context,
-      // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
-      builder: (context) => AlertDialog.adaptive( 
+      builder: (context) => AlertDialog.adaptive(
         backgroundColor: AppCores.fundoPrimario,
-        title: const Text(
-          'Sair do App?',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: const Text(
-          'Tem certeza que deseja desconectar sua conta?',
-          style: TextStyle(color: Colors.white70),
-        ),
+        title: Text(titulo, style: const TextStyle(color: Colors.white)),
+        content: Text(subtitulo, style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -56,9 +53,9 @@ class _HomeViewState extends State<HomeView> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Sair',
-              style: TextStyle(
+            child: Text(
+              textoBotaoConfirmar,
+              style: const TextStyle(
                 color: Colors.redAccent,
                 fontWeight: FontWeight.bold,
               ),
@@ -66,6 +63,14 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _deslogar() async {
+    final confirmar = await _exibirDialogoConfirmacao(
+      titulo: 'Sair do App?',
+      subtitulo: 'Tem certeza que deseja desconectar sua conta?',
+      textoBotaoConfirmar: 'Sair',
     );
 
     if (confirmar == true) {
@@ -144,8 +149,10 @@ class _HomeViewState extends State<HomeView> {
             child: Padding(
               padding: EdgeInsets.all(32.0),
               // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
-              child: CircularProgressIndicator.adaptive( 
-                valueColor: AlwaysStoppedAnimation<Color>(AppCores.amareloBizzu),
+              child: CircularProgressIndicator.adaptive(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppCores.amareloBizzu,
+                ),
               ),
             ),
           )
@@ -187,39 +194,10 @@ class _HomeViewState extends State<HomeView> {
                     if (atualizou == true) _carregarConcursos();
                   },
                   onExcluir: () async {
-                    final confirmar = await showDialog<bool>(
-                      context: context,
-                      // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
-                      builder: (context) => AlertDialog.adaptive( 
-                        backgroundColor: AppCores.fundoPrimario,
-                        title: const Text(
-                          'Excluir Concurso?',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        content: const Text(
-                          'Esta ação não pode ser desfeita.',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text(
-                              'Cancelar',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text(
-                              'Excluir',
-                              style: TextStyle(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    final confirmar = await _exibirDialogoConfirmacao(
+                      titulo: 'Excluir Concurso?',
+                      subtitulo: 'Esta ação não pode ser desfeita.',
+                      textoBotaoConfirmar: 'Excluir',
                     );
 
                     if (confirmar == true && usuario != null) {
