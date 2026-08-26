@@ -5,10 +5,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
 import '../models/repositories/cadastro_repository.dart';
 import 'package:bizzu_concursos/views/login_view.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import '../utils/i_alerta_servico.dart';
 import '../utils/alerta_snackbar.dart';
-import '../utils/alerta_dialog.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
