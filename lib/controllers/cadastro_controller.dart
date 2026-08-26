@@ -6,6 +6,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../models/usuario_model.dart';
 import '../models/repositories/cadastro_repository.dart';
 import 'package:bizzu_concursos/views/login_view.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();

@@ -3,14 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'views/bem_vindo_view.dart';
 import 'firebase_options.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const BizzuApp());
 }
@@ -22,6 +20,9 @@ class BizzuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bizzu Concursos',
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      ],
       debugShowCheckedModeBanner: false,
 
       theme: ThemeData(
