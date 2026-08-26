@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
+import 'package:bizzu_concursos/utils/validadores.dart';
 
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
@@ -121,13 +122,7 @@ class _CadastroViewState extends State<CadastroView> {
                               errorBorder: _criarBorda(cor: Colors.red),
                               focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
-                            validator: (textoDigitado) {
-                              if (textoDigitado == null ||
-                                  textoDigitado.trim().isEmpty) {
-                                return 'Por favor, informe seu nome completo.';
-                              }
-                              return null;
-                            },
+                            validator: ValidadorNome().validar,
                           ),
                           const SizedBox(height: espacoPequeno),
                           TextFormField(
@@ -148,16 +143,7 @@ class _CadastroViewState extends State<CadastroView> {
                               errorBorder: _criarBorda(cor: Colors.red),
                               focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
-                            validator: (textoDigitado) {
-                              if (textoDigitado == null ||
-                                  textoDigitado.trim().isEmpty) {
-                                return 'Por favor, informe seu e-mail.';
-                              } else if (!textoDigitado.contains('@') ||
-                                  !textoDigitado.contains('.')) {
-                                return 'Informe um e-mail válido (ex: seu@email.com).';
-                              }
-                              return null;
-                            },
+                            validator: ValidadorEmail().validar,
                           ),
                           const SizedBox(height: espacoPequeno),
                           TextFormField(
@@ -191,15 +177,7 @@ class _CadastroViewState extends State<CadastroView> {
                               errorBorder: _criarBorda(cor: Colors.red),
                               focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
-                            validator: (textoDigitado) {
-                              if (textoDigitado == null ||
-                                  textoDigitado.trim().isEmpty) {
-                                return 'Por favor, crie uma senha.';
-                              } else if (textoDigitado.length < 6) {
-                                return 'A senha deve ter pelo menos 6 caracteres.';
-                              }
-                              return null;
-                            },
+                            validator: ValidadorSenha().validar,
                           ),
                           const SizedBox(height: espacoMedio),
                           ElevatedButton(
