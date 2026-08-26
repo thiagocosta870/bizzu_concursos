@@ -17,6 +17,10 @@ class _CadastroViewState extends State<CadastroView> {
 
   bool _ocultarSenha = true;
 
+  static const double espacoGrande = 35.0;
+  static const double espacoMedio = 32.0;
+  static const double espacoPequeno = 16.0;
+
   Future<void> _executarComLoading(Future<void> Function() acao) async {
     setState(() {
       _isLoading = true;
@@ -29,6 +33,13 @@ class _CadastroViewState extends State<CadastroView> {
         _isLoading = false;
       });
     }
+  }
+
+  InputBorder _criarBorda({required Color cor}) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(color: cor),
+      borderRadius: BorderRadius.circular(12),
+    );
   }
 
   @override
@@ -83,7 +94,7 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 35),
+                          const SizedBox(height: espacoGrande),
                           const Text(
                             'Crie sua conta',
                             style: TextStyle(
@@ -93,7 +104,7 @@ class _CadastroViewState extends State<CadastroView> {
                             ),
                             textAlign: TextAlign.left,
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: espacoMedio),
                           TextFormField(
                             controller: _controller.nomeController,
                             style: const TextStyle(color: Colors.white),
@@ -104,30 +115,16 @@ class _CadastroViewState extends State<CadastroView> {
                                 Icons.person,
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                              enabledBorder: _criarBorda(cor: Colors.grey),
+                              focusedBorder: _criarBorda(
+                                cor: const Color(0xFF415A77),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF415A77),
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              errorBorder: _criarBorda(cor: Colors.red),
+                              focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
                             validator: ValidadorNome().validar,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: espacoPequeno),
                           TextFormField(
                             controller: _controller.emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -139,30 +136,16 @@ class _CadastroViewState extends State<CadastroView> {
                                 Icons.email,
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                              enabledBorder: _criarBorda(cor: Colors.grey),
+                              focusedBorder: _criarBorda(
+                                cor: const Color(0xFF415A77),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF415A77),
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              errorBorder: _criarBorda(cor: Colors.red),
+                              focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
                             validator: ValidadorEmail().validar,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: espacoPequeno),
                           TextFormField(
                             controller: _controller.senhaController,
                             obscureText: _ocultarSenha,
@@ -187,30 +170,16 @@ class _CadastroViewState extends State<CadastroView> {
                                   color: Colors.grey,
                                 ),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
+                              enabledBorder: _criarBorda(cor: Colors.grey),
+                              focusedBorder: _criarBorda(
+                                cor: const Color(0xFF415A77),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF415A77),
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              errorBorder: _criarBorda(cor: Colors.red),
+                              focusedErrorBorder: _criarBorda(cor: Colors.red),
                             ),
                             validator: ValidadorSenha().validar,
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: espacoMedio),
                           ElevatedButton(
                             onPressed: () {
                               _executarComLoading(() async {
@@ -232,7 +201,7 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: espacoGrande),
                           Row(
                             children: [
                               const Expanded(
@@ -261,7 +230,7 @@ class _CadastroViewState extends State<CadastroView> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: espacoMedio),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -281,7 +250,7 @@ class _CadastroViewState extends State<CadastroView> {
                                   minimumSize: const Size(60, 40),
                                 ),
                               ),
-                              const SizedBox(width: 32),
+                              const SizedBox(width: espacoGrande),
                               IconButton(
                                 onPressed: () {
                                   _executarComLoading(() async {
@@ -311,13 +280,11 @@ class _CadastroViewState extends State<CadastroView> {
 
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(
-                0.6,
-              ), // Fundo preto com 60% de transparência
+              color: Colors.black.withOpacity(0.6),
               child: const Center(
                 child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    AppCores.amareloBizzu, // O amarelo da sua logo
+                    AppCores.amareloBizzu,
                   ),
                 ),
               ),

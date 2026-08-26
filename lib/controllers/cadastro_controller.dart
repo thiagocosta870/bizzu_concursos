@@ -32,6 +32,27 @@ class CadastroController {
     _alertaServico.exibir(context, mensagem, isErro: isErro);
   }
 
+  void _mostrarAlertaVisual(
+    BuildContext context,
+    String mensagem,
+    Color corFundo,
+  ) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          mensagem,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: corFundo,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
   Future<void> finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       try {
@@ -64,7 +85,8 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem =
+              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
