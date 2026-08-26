@@ -3,10 +3,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../views/home_view.dart';
+
 class LoginController {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
+
+  void _mostrarMensagem(BuildContext context, String mensagem, Color cor) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensagem), backgroundColor: cor));
+  }
+
+  void _navegarParaHome(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeView()),
+    );
+  }
 
   Future<void> entrarComEmail(BuildContext context) async {
     if (formKey.currentState!.validate()) {
@@ -17,21 +31,18 @@ class LoginController {
         );
 
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Bem-vindo(a) de volta ao Bizzu Concursos!'),
-            backgroundColor: Colors.green,
-          ),
+        _mostrarMensagem(
+          context,
+          'Bem-vindo(a) de volta ao Bizzu Concursos!',
+          Colors.green,
         );
 
         emailController.clear();
         senhaController.clear();
 
         if (!context.mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeView()),
-        );
+
+        _navegarParaHome(context);
       } on FirebaseAuthException catch (e) {
         String mensagem = 'Erro ao fazer login: $e';
 
@@ -42,9 +53,8 @@ class LoginController {
         }
 
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(mensagem), backgroundColor: Colors.red),
-        );
+
+        _mostrarMensagem(context, mensagem, Colors.red);
       }
     }
   }
@@ -83,18 +93,18 @@ class LoginController {
       );
 
       if (!context.mounted) return;
-      Navigator.pushReplacement(
+
+      _mostrarMensagem(
         context,
-        MaterialPageRoute(builder: (context) => HomeView()),
+        'Login com Google realizado com sucesso!',
+        Colors.green,
       );
+
+      _navegarParaHome(context);
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Google: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+
+      _mostrarMensagem(context, 'Erro ao conectar Google: $e', Colors.red);
     }
   }
 
@@ -114,26 +124,20 @@ class LoginController {
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login com Facebook realizado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
+
+      _mostrarMensagem(
+        context,
+        'Login com Facebook realizado com sucesso!',
+        Colors.green,
       );
 
       if (!context.mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeView()),
-      );
+
+      _navegarParaHome(context);
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar Facebook: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+
+      _mostrarMensagem(context, 'Erro ao conectar Facebook: $e', Colors.red);
     }
   }
 }
