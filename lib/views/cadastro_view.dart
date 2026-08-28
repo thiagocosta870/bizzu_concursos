@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
+import 'package:bizzu_concursos/strategies/auth_strategy.dart';
+import 'package:bizzu_concursos/views/login_view.dart';
 import 'package:bizzu_concursos/utils/validadores.dart';
 
 class CadastroView extends StatefulWidget {
@@ -12,9 +14,7 @@ class CadastroView extends StatefulWidget {
 
 class _CadastroViewState extends State<CadastroView> {
   final CadastroController _controller = CadastroController();
-
   bool _isLoading = false;
-
   bool _ocultarSenha = true;
 
   static const double espacoGrande = 35.0;
@@ -237,8 +237,10 @@ class _CadastroViewState extends State<CadastroView> {
                               IconButton(
                                 onPressed: () {
                                   _executarComLoading(() async {
-                                    await _controller.cadastrarComGoogle(
+                                    await _controller.autenticarComRedeSocial(
                                       context,
+                                      AuthGoogleStrategy(),
+                                      'Google',
                                     );
                                   });
                                 },
@@ -254,8 +256,10 @@ class _CadastroViewState extends State<CadastroView> {
                               IconButton(
                                 onPressed: () {
                                   _executarComLoading(() async {
-                                    await _controller.cadastrarComFacebook(
+                                    await _controller.autenticarComRedeSocial(
                                       context,
+                                      AuthFacebookStrategy(),
+                                      'Facebook',
                                     );
                                   });
                                 },
@@ -277,7 +281,6 @@ class _CadastroViewState extends State<CadastroView> {
               );
             },
           ),
-
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.6),

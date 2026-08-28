@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import '../models/usuario_model.dart';
-import '../models/repositories/cadastro_repository.dart';
-import 'package:bizzu_concursos/views/login_view.dart';
-import '../utils/i_alerta_servico.dart';
-import '../utils/alerta_snackbar.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -106,32 +99,14 @@ class CadastroController {
     }
   }
 
-  Future<void> cadastrarComGoogle(BuildContext context) async {
+  Future<void> autenticarComRedeSocial(
+    BuildContext context,
+    AuthStrategy estrategia,
+    String nomeProvedor,
+  ) async {
     try {
-      await GoogleSignIn.instance.initialize();
-
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
-          .authenticate();
-
-      if (googleUser == null) {
-        debugPrint('Login com Google cancelado pelo usuário.');
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final clientAuth = await googleUser.authorizationClient.authorizeScopes([
-        'email',
-      ]);
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: clientAuth.accessToken,
-      );
-
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
+      // 1. Executa a estratégia injetada (Google ou Facebook)
+      UserCredential userCredential = await estrategia.autenticar();
       String uid = userCredential.user?.uid ?? '';
 
       await _repository.salvarUsuarioNoFirestore(
@@ -140,83 +115,29 @@ class CadastroController {
         userCredential.user?.email ?? '',
       );
 
-      debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
+      debugPrint('--- SUCESSO COMPLETO COM $nomeProvedor! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
-      try{
+      try {
         await FirebaseAnalytics.instance.logEvent(
           name: 'login_rede_social',
-          parameters: {'metodo': 'Google'},
-          );
-          debugPrint('ANALYTICS: Evento de login com Google registrado!');
+          parameters: {'metodo': strategy.nomeProvedor},
+        );
+        debugPrint('📊 ANALYTICS: Login com ${strategy.nomeProvedor} registrado!');
       } catch (e) {
-        debugPrint('ANALYTICS ERRO: $e');
+        debugPrint('❌ ANALYTICS ERRO: $e');
       }
 
-      _mostrarAlertaVisual(
-        context,
-        'Conta Google conectada com sucesso!',
-        Colors.green,
-      );
+      if (!context.mounted) return;
+      _mostrarAlertaVisual(context, 'Conta ${strategy.nomeProvedor} conectada com sucesso!', Colors.green);
+      
     } catch (e) {
-      debugPrint('Erro ao cadastrar com o Google: $e');
-      _mostrarAlertaVisual(context, 'Erro ao conectar Google: $e', Colors.red);
+      debugPrint('Erro ao cadastrar com a rede social: $e');
+      if (!context.mounted) return;
+      _mostrarAlertaVisual(context, 'Erro ao conectar: $e', Colors.red);
     }
   }
-
-  Future<void> cadastrarComFacebook(BuildContext context) async {
-    try {
-      final LoginResult result = await FacebookAuth.instance.login(
-        permissions: ['email', 'public_profile'],
-      );
-
-      if (result.status != LoginStatus.success) {
-        debugPrint(
-          'Login com Facebook cancelado ou falhou. Status: ${result.status}',
-        );
-        return;
-      }
-
-      final AccessToken accessToken = result.accessToken!;
-
-      final OAuthCredential credential = FacebookAuthProvider.credential(
-        accessToken.tokenString,
-      );
-
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithCredential(credential);
-      String uid = userCredential.user?.uid ?? '';
-
-      await _repository.salvarUsuarioNoFirestore(
-        uid,
-        userCredential.user?.displayName ?? 'Usuário',
-        userCredential.user?.email ?? '',
-      );
-
-      debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
-      debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
-
-      try{
-        await FirebaseAnalytics.instance.logEvent(
-          name: 'login_rede_social',
-          parameters: {'metodo': 'Facebook'},
-        );
-        debugPrint('ANALYTICS: Evento de login com Facebook registrado!');
-      } catch (e) {
-        debugPrint('ANALYTICS ERRO: $e');
-      }
-
-      _mostrarAlertaVisual(
-        context,
-        'Conta Facebook conectada com sucesso!',
-        Colors.green,
-      );
-    } catch (e) {
-      debugPrint('Erro ao cadastrar com o Facebook: $e');
-      _mostrarAlertaVisual(
-        context,
-        'Erro ao conectar Facebook: $e',
-        Colors.red,
+      
       );
     }
   }
