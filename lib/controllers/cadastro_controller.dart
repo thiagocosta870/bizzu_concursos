@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
+import '../models/usuario_model.dart';
+import '../views/login_view.dart';
+import '../models/repositories/cadastro_repository.dart';
+import '../utils/i_alerta_servico.dart';
+import '../utils/alerta_snackbar.dart';
+import '../strategies/auth_strategy.dart'; 
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -10,16 +16,13 @@ class CadastroController {
   final senhaController = TextEditingController();
 
   final CadastroRepository _repository;
-
   final IAlertaServico _alertaServico;
 
   CadastroController({
     CadastroRepository? repository,
     IAlertaServico? alertaServico,
   }) : _repository = repository ?? CadastroRepository(),
-       _alertaServico =
-           alertaServico ??
-           AlertaSnackBar(); //Se quiser posso trocar para (AlertaDialog, que vai funcionar perfeitamente, respeitando o Liskov Substitution)
+       _alertaServico = alertaServico ?? AlertaSnackBar();
 
   void _mostrarAlertaVisual(
     BuildContext context,
@@ -76,8 +79,7 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem =
-              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
@@ -102,10 +104,8 @@ class CadastroController {
   Future<void> autenticarComRedeSocial(
     BuildContext context,
     AuthStrategy estrategia,
-    String nomeProvedor,
   ) async {
     try {
-      // 1. Executa a estratégia injetada (Google ou Facebook)
       UserCredential userCredential = await estrategia.autenticar();
       String uid = userCredential.user?.uid ?? '';
 
@@ -115,30 +115,27 @@ class CadastroController {
         userCredential.user?.email ?? '',
       );
 
-      debugPrint('--- SUCESSO COMPLETO COM $nomeProvedor! ---');
+      // Usando a variável corretamente como "estrategia"
+      debugPrint('--- SUCESSO COMPLETO COM ${estrategia.nomeProvedor.toUpperCase()}! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
       try {
         await FirebaseAnalytics.instance.logEvent(
           name: 'login_rede_social',
-          parameters: {'metodo': strategy.nomeProvedor},
+          parameters: {'metodo': estrategia.nomeProvedor},
         );
-        debugPrint('📊 ANALYTICS: Login com ${strategy.nomeProvedor} registrado!');
+        debugPrint(' ANALYTICS: Login com ${estrategia.nomeProvedor} registrado!');
       } catch (e) {
-        debugPrint('❌ ANALYTICS ERRO: $e');
+        debugPrint(' ANALYTICS ERRO: $e');
       }
 
       if (!context.mounted) return;
-      _mostrarAlertaVisual(context, 'Conta ${strategy.nomeProvedor} conectada com sucesso!', Colors.green);
+      _mostrarAlertaVisual(context, 'Conta ${estrategia.nomeProvedor} conectada com sucesso!', Colors.green);
       
     } catch (e) {
       debugPrint('Erro ao cadastrar com a rede social: $e');
       if (!context.mounted) return;
       _mostrarAlertaVisual(context, 'Erro ao conectar: $e', Colors.red);
-    }
-  }
-      
-      );
     }
   }
 

@@ -3,10 +3,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 abstract class AuthStrategy {
+  String get nomeProvedor; 
   Future<UserCredential> autenticar();
 }
 
 class AuthGoogleStrategy implements AuthStrategy {
+  @override
+  String get nomeProvedor => 'Google'; 
+
   @override
   Future<UserCredential> autenticar() async {
     await GoogleSignIn.instance.initialize();
@@ -27,6 +31,9 @@ class AuthGoogleStrategy implements AuthStrategy {
 }
 
 class AuthFacebookStrategy implements AuthStrategy {
+  @override
+  String get nomeProvedor => 'Facebook'; 
+
   @override
   Future<UserCredential> autenticar() async {
     final LoginResult result = await FacebookAuth.instance.login(permissions: ['email', 'public_profile']);

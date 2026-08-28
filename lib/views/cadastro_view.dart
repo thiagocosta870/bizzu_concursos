@@ -240,7 +240,6 @@ class _CadastroViewState extends State<CadastroView> {
                                     await _controller.autenticarComRedeSocial(
                                       context,
                                       AuthGoogleStrategy(),
-                                      'Google',
                                     );
                                   });
                                 },
@@ -259,7 +258,6 @@ class _CadastroViewState extends State<CadastroView> {
                                     await _controller.autenticarComRedeSocial(
                                       context,
                                       AuthFacebookStrategy(),
-                                      'Facebook',
                                     );
                                   });
                                 },
