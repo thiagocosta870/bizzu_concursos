@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/usuario_model.dart';
-import '../models/repositories/cadastro_repository.dart';
-import 'package:bizzu_concursos/views/login_view.dart';
-import '../strategies/auth_strategy.dart';
+
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -13,7 +9,26 @@ class CadastroController {
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
 
-  final CadastroRepository _repository = CadastroRepository();
+  final CadastroRepository _repository;
+
+  final IAlertaServico _alertaServico;
+
+  CadastroController({
+    CadastroRepository? repository,
+    IAlertaServico? alertaServico,
+  }) : _repository = repository ?? CadastroRepository(),
+       _alertaServico =
+           alertaServico ??
+           AlertaSnackBar(); //Se quiser posso trocar para (AlertaDialog, que vai funcionar perfeitamente, respeitando o Liskov Substitution)
+
+  void _mostrarAlertaVisual(
+    BuildContext context,
+    String mensagem,
+    Color corFundo,
+  ) {
+    bool isErro = corFundo == Colors.red;
+    _alertaServico.exibir(context, mensagem, isErro: isErro);
+  }
 
   Future<void> finalizarCadastro(BuildContext context) async {
     if (formKey.currentState!.validate()) {
@@ -29,24 +44,26 @@ class CadastroController {
         debugPrint('SUCESSO COMPLETO!');
         debugPrint('Usuário criado e salvo no Firestore com UID: $uid');
 
+        try {
+          await FirebaseAnalytics.instance.logEvent(
+            name: 'sign_up',
+            parameters: {'metodo': 'Email'},
+          );
+          debugPrint('ANALYTICS: Cadastro com E-mail registrado');
+        } catch (e) {
+          debugPrint('ANALYTICS ERRO: $e');
+        }
+
         if (!context.mounted) return;
 
         nomeController.clear();
         emailController.clear();
         senhaController.clear();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Cadastro realizado com sucesso!',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-          ),
+        _mostrarAlertaVisual(
+          context,
+          'Cadastro realizado com sucesso!',
+          Colors.green,
         );
 
         if (!context.mounted) return;
@@ -68,36 +85,13 @@ class CadastroController {
         }
 
         debugPrint(mensagem);
-
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              mensagem,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        _mostrarAlertaVisual(context, mensagem, Colors.red);
       } catch (e) {
         debugPrint('Erro desconhecido ao salvar usuário: $e');
-
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        _mostrarAlertaVisual(
+          context,
+          'Ocorreu um erro inesperado. Verifique sua conexão e tente novamente.',
+          Colors.red,
         );
       }
     } else {
@@ -115,32 +109,35 @@ class CadastroController {
       UserCredential userCredential = await estrategia.autenticar();
       String uid = userCredential.user?.uid ?? '';
 
-      // 2. Salva no banco de dados (Lógica direta do Firestore)
-      await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
-        'uid': uid,
-        'nome': userCredential.user?.displayName ?? 'Usuário',
-        'email': userCredential.user?.email ?? '',
-        'criadoEm': Timestamp.now(),
-      }, SetOptions(merge: true));
+      await _repository.salvarUsuarioNoFirestore(
+        uid,
+        userCredential.user?.displayName ?? 'Usuário',
+        userCredential.user?.email ?? '',
+      );
 
       debugPrint('--- SUCESSO COMPLETO COM $nomeProvedor! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
+      try {
+        await FirebaseAnalytics.instance.logEvent(
+          name: 'login_rede_social',
+          parameters: {'metodo': strategy.nomeProvedor},
+        );
+        debugPrint('📊 ANALYTICS: Login com ${strategy.nomeProvedor} registrado!');
+      } catch (e) {
+        debugPrint('❌ ANALYTICS ERRO: $e');
+      }
+
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Conta $nomeProvedor conectada com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      _mostrarAlertaVisual(context, 'Conta ${strategy.nomeProvedor} conectada com sucesso!', Colors.green);
+      
     } catch (e) {
-      debugPrint('Erro ao cadastrar com $nomeProvedor: $e');
+      debugPrint('Erro ao cadastrar com a rede social: $e');
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar $nomeProvedor.'),
-          backgroundColor: Colors.red,
-        ),
+      _mostrarAlertaVisual(context, 'Erro ao conectar: $e', Colors.red);
+    }
+  }
+      
       );
     }
   }
