@@ -7,6 +7,7 @@ import '../models/repositories/cadastro_repository.dart';
 import 'package:bizzu_concursos/views/login_view.dart';
 import '../utils/i_alerta_servico.dart';
 import '../utils/alerta_snackbar.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -49,6 +50,16 @@ class CadastroController {
 
         debugPrint('SUCESSO COMPLETO!');
         debugPrint('Usuário criado e salvo no Firestore com UID: $uid');
+
+        try {
+          await FirebaseAnalytics.instance.logEvent(
+            name: 'sign_up',
+            parameters: {'metodo': 'Email'},
+          );
+          debugPrint('ANALYTICS: Cadastro com E-mail registrado');
+        } catch (e) {
+          debugPrint('ANALYTICS ERRO: $e');
+        }
 
         if (!context.mounted) return;
 
@@ -132,6 +143,16 @@ class CadastroController {
       debugPrint('--- SUCESSO COMPLETO COM GOOGLE! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
+      try{
+        await FirebaseAnalytics.instance.logEvent(
+          name: 'login_rede_social',
+          parameters: {'metodo': 'Google'},
+          );
+          debugPrint('ANALYTICS: Evento de login com Google registrado!');
+      } catch (e) {
+        debugPrint('ANALYTICS ERRO: $e');
+      }
+
       _mostrarAlertaVisual(
         context,
         'Conta Google conectada com sucesso!',
@@ -174,6 +195,16 @@ class CadastroController {
 
       debugPrint('--- SUCESSO COMPLETO COM FACEBOOK! ---');
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
+
+      try{
+        await FirebaseAnalytics.instance.logEvent(
+          name: 'login_rede_social',
+          parameters: {'metodo': 'Facebook'},
+        );
+        debugPrint('ANALYTICS: Evento de login com Facebook registrado!');
+      } catch (e) {
+        debugPrint('ANALYTICS ERRO: $e');
+      }
 
       _mostrarAlertaVisual(
         context,
