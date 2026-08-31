@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 
-
 class CampoTextoCustomizado extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
@@ -9,10 +8,12 @@ class CampoTextoCustomizado extends StatelessWidget {
   final bool isSenha;
   final double paddingBottom;
   final String? Function(String?)? validator;
-  
-  final bool readOnly; 
-  final VoidCallback? onTap; 
-  final TextCapitalization textCapitalization; 
+
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final TextCapitalization textCapitalization;
+
+  final Widget? suffixIcon;
 
   const CampoTextoCustomizado({
     super.key,
@@ -20,11 +21,13 @@ class CampoTextoCustomizado extends StatelessWidget {
     required this.hintText,
     required this.icone,
     this.isSenha = false,
-    this.paddingBottom = 20.0, 
+    this.paddingBottom = 20.0,
     this.validator,
     this.readOnly = false,
     this.onTap,
     this.textCapitalization = TextCapitalization.none,
+
+    this.suffixIcon,
   });
 
   @override
@@ -34,14 +37,17 @@ class CampoTextoCustomizado extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: isSenha,
-        readOnly: readOnly, 
-        onTap: onTap, // Ação ao clicar
+        readOnly: readOnly,
+        onTap: onTap, 
         textCapitalization: textCapitalization,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          labelText: hintText, 
+          labelText: hintText,
           labelStyle: const TextStyle(color: Colors.grey),
           prefixIcon: Icon(icone, color: const Color(0xFF415A77)),
+
+          suffixIcon: suffixIcon,
+
           filled: true,
           fillColor: const Color(0xFF101820),
           enabledBorder: OutlineInputBorder(
@@ -50,7 +56,10 @@ class CampoTextoCustomizado extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppCores.amareloBizzu, width: 2),
+            borderSide: const BorderSide(
+              color: AppCores.amareloBizzu,
+              width: 2,
+            ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

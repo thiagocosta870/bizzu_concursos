@@ -16,6 +16,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final LoginController _controller = LoginController();
   bool _isLoading = false;
+  bool _ocultarSenha = true;
 
   Future<void> _executarComLoading(Future<void> Function() acao) async {
     setState(() => _isLoading = true);
@@ -152,8 +153,24 @@ class _LoginViewState extends State<LoginView> {
                             controller: _controller.senhaController,
                             hintText: 'Senha',
                             icone: Icons.lock,
-                            isSenha: true,
+                            isSenha: _ocultarSenha,
                             paddingBottom: 8,
+
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _ocultarSenha
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _ocultarSenha =
+                                      !_ocultarSenha; 
+                                });
+                              },
+                            ),
+
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Por favor, informe sua senha.';
