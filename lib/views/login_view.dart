@@ -4,6 +4,7 @@ import 'package:bizzu_concursos/views/widgets/campo_texto_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_rede_social.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
+import 'package:bizzu_concursos/views/esqueci_senha_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -164,7 +165,15 @@ class _LoginViewState extends State<LoginView> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const EsqueciSenhaView(),
+                                  ),
+                                );
+                              },
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.all(5),
                               ),
