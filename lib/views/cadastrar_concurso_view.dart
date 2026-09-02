@@ -6,7 +6,6 @@ import 'package:bizzu_concursos/views/widgets/campo_texto_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_customizado.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 
-
 class CadastrarConcursoView extends StatefulWidget {
   final ConcursoModel? concursoParaEditar;
 
@@ -22,7 +21,20 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   final _nomeController = TextEditingController();
   final _dataController = TextEditingController();
   final _cargoController = TextEditingController();
-  final _materiasController = TextEditingController();
+
+  final List<String> _todasAsMaterias = [
+    'Língua Portuguesa',
+    'Matemática',
+    'Raciocínio Lógico',
+    'Informática',
+    'Direito Administrativo',
+    'Direito Constitucional',
+    'Direito Penal',
+    'Direitos Humanos',
+    'Atualidades',
+    'Redação',
+  ];
+  List<String> _materiasSelecionadas = [];
 
   final _controller = CadastroConcursoController();
   bool _estaCarregando = false;
@@ -34,7 +46,14 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       _nomeController.text = widget.concursoParaEditar!.nome;
       _dataController.text = widget.concursoParaEditar!.dataProva;
       _cargoController.text = widget.concursoParaEditar!.cargo;
-      _materiasController.text = widget.concursoParaEditar!.materias;
+
+      if (widget.concursoParaEditar!.materias.isNotEmpty) {
+        _materiasSelecionadas = widget.concursoParaEditar!.materias
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
+      }
     }
   }
 
@@ -43,7 +62,6 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
     _nomeController.dispose();
     _dataController.dispose();
     _cargoController.dispose();
-    _materiasController.dispose();
     super.dispose();
   }
 
@@ -62,8 +80,8 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
               surface: Color(0xFF101820),
               onSurface: Colors.white,
             ),
-            dialogTheme: DialogThemeData(
-              backgroundColor: const Color(0xFF02080C),
+            dialogTheme: const DialogThemeData(
+              backgroundColor: Color(0xFF02080C),
             ),
           ),
           child: child!,
@@ -81,7 +99,96 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
     }
   }
 
+  void _abrirSelecaoDeMaterias() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF101820),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Text(
+                    'Selecione as Matérias',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _todasAsMaterias.length,
+                      itemBuilder: (context, index) {
+                        final materia = _todasAsMaterias[index];
+                        final isSelected = _materiasSelecionadas.contains(
+                          materia,
+                        );
+
+                        return CheckboxListTile(
+                          title: Text(
+                            materia,
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                          value: isSelected,
+                          activeColor: AppCores.amareloBizzu,
+                          checkColor: Colors.black,
+                          side: const BorderSide(color: Colors.grey),
+                          onChanged: (bool? value) {
+                            setModalState(() {
+                              if (value == true) {
+                                _materiasSelecionadas.add(materia);
+                              } else {
+                                _materiasSelecionadas.remove(materia);
+                              }
+                            });
+                            setState(() {});
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppCores.amareloBizzu,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: const Text(
+                      'Confirmar',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _salvarDados() async {
+    if (_materiasSelecionadas.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, selecione pelo menos uma matéria.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       setState(() => _estaCarregando = true);
       final usuarioId = FirebaseAuth.instance.currentUser?.uid;
@@ -89,12 +196,14 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       if (usuarioId != null) {
         bool sucesso;
 
+        String materiasFormatadas = _materiasSelecionadas.join(', ');
+
         if (widget.concursoParaEditar == null) {
           sucesso = await _controller.salvarNovoConcurso(
             nome: _nomeController.text.trim(),
             cargo: _cargoController.text.trim(),
             dataProva: _dataController.text.trim(),
-            materias: _materiasController.text.trim(),
+            materias: materiasFormatadas,
             usuarioId: usuarioId,
           );
         } else {
@@ -103,7 +212,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
             nome: _nomeController.text.trim(),
             cargo: _cargoController.text.trim(),
             dataProva: _dataController.text.trim(),
-            materias: _materiasController.text.trim(),
+            materias: materiasFormatadas,
             usuarioId: usuarioId,
           );
         }
@@ -150,9 +259,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
           width: 160,
           fit: BoxFit.contain,
         ),
-        iconTheme: const IconThemeData(
-          color: AppCores.amareloBizzu,
-        ),
+        iconTheme: const IconThemeData(color: AppCores.amareloBizzu),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -204,15 +311,74 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                     : null,
               ),
 
-              CampoTextoCustomizado(
-                controller: _materiasController,
-                hintText: 'Matérias do concurso',
-                icone: Icons.menu_book,
-                textCapitalization: TextCapitalization.sentences,
-                paddingBottom: 24.0,
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Campo obrigatório'
-                    : null,
+              GestureDetector(
+                onTap: _abrirSelecaoDeMaterias,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
+                  margin: const EdgeInsets.only(bottom: 24.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101820),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _materiasSelecionadas.isNotEmpty
+                          ? AppCores.amareloBizzu
+                          : Colors.white12,
+                      width: _materiasSelecionadas.isNotEmpty ? 2 : 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.menu_book, color: Color(0xFF415A77)),
+                          const SizedBox(width: 12),
+                          Text(
+                            _materiasSelecionadas.isEmpty
+                                ? 'Selecione as matérias'
+                                : 'Matérias do concurso',
+                            style: TextStyle(
+                              color: _materiasSelecionadas.isEmpty
+                                  ? Colors.grey
+                                  : AppCores.amareloBizzu,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_materiasSelecionadas.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _materiasSelecionadas.map((materia) {
+                            return Chip(
+                              label: Text(
+                                materia,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              backgroundColor: AppCores.amareloBizzu,
+                              deleteIconColor: Colors.black,
+                              onDeleted: () {
+                                setState(() {
+                                  _materiasSelecionadas.remove(materia);
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
 
               OutlinedButton.icon(
