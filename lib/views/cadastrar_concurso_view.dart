@@ -22,26 +22,19 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   final _dataController = TextEditingController();
   final _cargoController = TextEditingController();
 
-  final List<String> _todasAsMaterias = [
-    'Língua Portuguesa',
-    'Matemática',
-    'Raciocínio Lógico',
-    'Informática',
-    'Direito Administrativo',
-    'Direito Constitucional',
-    'Direito Penal',
-    'Direitos Humanos',
-    'Atualidades',
-    'Redação',
-  ];
+  final _controller = CadastroConcursoController();
+
+  List<String> _todasAsMaterias = [];
   List<String> _materiasSelecionadas = [];
 
-  final _controller = CadastroConcursoController();
   bool _estaCarregando = false;
+  bool _carregandoMateriasGerais = true;
 
   @override
   void initState() {
     super.initState();
+    _carregarMateriasIniciais();
+
     if (widget.concursoParaEditar != null) {
       _nomeController.text = widget.concursoParaEditar!.nome;
       _dataController.text = widget.concursoParaEditar!.dataProva;
@@ -54,6 +47,16 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
             .where((e) => e.isNotEmpty)
             .toList();
       }
+    }
+  }
+
+  Future<void> _carregarMateriasIniciais() async {
+    final materiasDaApi = await _controller.buscarMateriasDaApi();
+    if (mounted) {
+      setState(() {
+        _todasAsMaterias = materiasDaApi;
+        _carregandoMateriasGerais = false;
+      });
     }
   }
 
@@ -99,6 +102,110 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
     }
   }
 
+  Future<void> _abrirMenuDeImportacao() async {
+    setState(() => _estaCarregando = true);
+    final editaisDisponiveis = await _controller.buscarListaDeEditais();
+    setState(() => _estaCarregando = false);
+
+    if (editaisDisponiveis.isEmpty && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nenhum edital disponível no momento.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF101820),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Selecione o Edital',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: editaisDisponiveis.length,
+                itemBuilder: (context, index) {
+                  final edital = editaisDisponiveis[index];
+                  return ListTile(
+                    leading: const Icon(
+                      Icons.assignment,
+                      color: AppCores.amareloBizzu,
+                    ),
+                    title: Text(
+                      edital['orgao'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${edital['cargo']} - Nível ${edital['nivel']}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _importarDetalhesDoEditalSelecionado(edital['id']);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _importarDetalhesDoEditalSelecionado(int id) async {
+    setState(() => _estaCarregando = true);
+    final detalhes = await _controller.buscarDetalhesDoEdital(id);
+    setState(() => _estaCarregando = false);
+
+    if (detalhes != null && mounted) {
+      setState(() {
+        _nomeController.text = detalhes['orgao'];
+        _cargoController.text = detalhes['cargo'];
+
+        _materiasSelecionadas.clear();
+        for (var materia in detalhes['materias']) {
+          String nomeMateria = materia['nome'];
+          _materiasSelecionadas.add(nomeMateria);
+
+          if (!_todasAsMaterias.contains(nomeMateria)) {
+            _todasAsMaterias.add(nomeMateria);
+          }
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Edital importado com sucesso! Preencha a data da prova.',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
   void _abrirSelecaoDeMaterias() {
     showModalBottomSheet(
       context: context,
@@ -122,38 +229,47 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _todasAsMaterias.length,
-                      itemBuilder: (context, index) {
-                        final materia = _todasAsMaterias[index];
-                        final isSelected = _materiasSelecionadas.contains(
-                          materia,
-                        );
 
-                        return CheckboxListTile(
-                          title: Text(
-                            materia,
-                            style: const TextStyle(color: Colors.white70),
+                  _carregandoMateriasGerais
+                      ? const Expanded(
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppCores.amareloBizzu,
+                            ),
                           ),
-                          value: isSelected,
-                          activeColor: AppCores.amareloBizzu,
-                          checkColor: Colors.black,
-                          side: const BorderSide(color: Colors.grey),
-                          onChanged: (bool? value) {
-                            setModalState(() {
-                              if (value == true) {
-                                _materiasSelecionadas.add(materia);
-                              } else {
-                                _materiasSelecionadas.remove(materia);
-                              }
-                            });
-                            setState(() {});
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                        )
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: _todasAsMaterias.length,
+                            itemBuilder: (context, index) {
+                              final materia = _todasAsMaterias[index];
+                              final isSelected = _materiasSelecionadas.contains(
+                                materia,
+                              );
+
+                              return CheckboxListTile(
+                                title: Text(
+                                  materia,
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                value: isSelected,
+                                activeColor: AppCores.amareloBizzu,
+                                checkColor: Colors.black,
+                                side: const BorderSide(color: Colors.grey),
+                                onChanged: (bool? value) {
+                                  setModalState(() {
+                                    if (value == true) {
+                                      _materiasSelecionadas.add(materia);
+                                    } else {
+                                      _materiasSelecionadas.remove(materia);
+                                    }
+                                  });
+                                  setState(() {});
+                                },
+                              );
+                            },
+                          ),
+                        ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
@@ -382,15 +498,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
               ),
 
               OutlinedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Funcionalidade de importação de edital em breve!',
-                      ),
-                    ),
-                  );
-                },
+                onPressed: _abrirMenuDeImportacao,
                 icon: const Icon(
                   Icons.file_upload_outlined,
                   color: AppCores.amareloBizzu,
