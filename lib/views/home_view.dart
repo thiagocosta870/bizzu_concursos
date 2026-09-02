@@ -5,6 +5,7 @@ import 'package:bizzu_concursos/views/widgets/card_concurso.dart';
 import 'package:bizzu_concursos/views/cadastrar_concurso_view.dart';
 import 'package:bizzu_concursos/controllers/home_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
+import 'package:bizzu_concursos/views/detalhes_concurso_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -209,7 +210,15 @@ class _HomeViewState extends State<HomeView> {
                       _carregarConcursos();
                     }
                   },
-                  onAbrir: () {},
+                  onAbrir: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DetalhesConcursoView(concurso: concurso),
+                      ),
+                    );
+                  },
                 ),
               )
               .toList(),
