@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bizzu_concursos/models/concurso_model.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
+import 'package:bizzu_concursos/views/timer_estudo_view.dart';
+import 'package:bizzu_concursos/controllers/assunto_controller.dart';
 
 class AssuntosMateriaView extends StatefulWidget {
   final ConcursoModel concurso;
@@ -19,17 +20,7 @@ class AssuntosMateriaView extends StatefulWidget {
 }
 
 class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String? _uid = FirebaseAuth.instance.currentUser?.uid;
-
-  CollectionReference get _assuntosRef {
-    return _firestore
-        .collection('usuarios')
-        .doc(_uid)
-        .collection('concursos')
-        .doc(widget.concurso.id)
-        .collection('assuntos');
-  }
+  final AssuntoController _controller = AssuntoController();
 
   void _exibirDialogoNovoAssunto() {
     final TextEditingController assuntoController = TextEditingController();
@@ -74,13 +65,13 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
                 backgroundColor: AppCores.amareloBizzu,
               ),
               onPressed: () async {
-                if (assuntoController.text.trim().isNotEmpty) {
-                  await _assuntosRef.add({
-                    'materia': widget.nomeMateria,
-                    'nome': assuntoController.text.trim(),
-                    'concluido': false,
-                    'criadoEm': DateTime.now().millisecondsSinceEpoch,
-                  });
+                if (assuntoController.text.trim().isNotEmpty &&
+                    widget.concurso.id != null) {
+                  await _controller.adicionarAssunto(
+                    widget.concurso.id!,
+                    widget.nomeMateria,
+                    assuntoController.text.trim(),
+                  );
                 }
                 if (mounted) Navigator.pop(context);
               },
@@ -99,7 +90,7 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
   }
 
   Future<void> _confirmarExclusaoAssunto(
-    DocumentReference docRef,
+    String assuntoId,
     String nomeAssunto,
   ) async {
     final confirmar = await showDialog<bool>(
@@ -133,8 +124,8 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
       ),
     );
 
-    if (confirmar == true) {
-      await docRef.delete();
+    if (confirmar == true && widget.concurso.id != null) {
+      await _controller.excluirAssunto(widget.concurso.id!, assuntoId);
     }
   }
 
@@ -156,9 +147,10 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _assuntosRef
-            .where('materia', isEqualTo: widget.nomeMateria)
-            .snapshots(),
+        stream: _controller.streamAssuntos(
+          widget.concurso.id ?? '',
+          widget.nomeMateria,
+        ),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(
@@ -224,6 +216,8 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
               final doc = assuntos[index];
               final data = doc.data() as Map<String, dynamic>;
               final isConcluido = data['concluido'] ?? false;
+              final nomeAssunto = data['nome'];
+              final assuntoId = doc.id;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
@@ -238,7 +232,7 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
                 ),
                 child: ListTile(
                   title: Text(
-                    data['nome'],
+                    nomeAssunto,
                     style: TextStyle(
                       color: isConcluido ? Colors.grey : Colors.white,
                       decoration: isConcluido
@@ -251,14 +245,32 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
                     children: [
                       IconButton(
                         icon: const Icon(
+                          Icons.play_circle_outline,
+                          color: AppCores.amareloBizzu,
+                          size: 24,
+                        ),
+                        tooltip: 'Estudar',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TimerEstudoView(
+                                materia: widget.nomeMateria,
+                                assunto: nomeAssunto,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
                           Icons.delete_outline,
                           color: Colors.redAccent,
                           size: 20,
                         ),
-                        onPressed: () => _confirmarExclusaoAssunto(
-                          doc.reference,
-                          data['nome'],
-                        ),
+                        tooltip: 'Excluir',
+                        onPressed: () =>
+                            _confirmarExclusaoAssunto(assuntoId, nomeAssunto),
                       ),
                       IconButton(
                         icon: Icon(
@@ -269,8 +281,15 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
                               ? AppCores.amareloBizzu
                               : Colors.white24,
                         ),
+                        tooltip: isConcluido ? 'Desmarcar' : 'Concluir',
                         onPressed: () {
-                          doc.reference.update({'concluido': !isConcluido});
+                          if (widget.concurso.id != null) {
+                            _controller.alternarStatusConcluido(
+                              widget.concurso.id!,
+                              assuntoId,
+                              isConcluido,
+                            );
+                          }
                         },
                       ),
                     ],
