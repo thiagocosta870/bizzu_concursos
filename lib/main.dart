@@ -4,6 +4,7 @@ import 'views/bem_vindo_view.dart';
 import 'firebase_options.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,16 @@ class BizzuApp extends StatelessWidget {
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
       ],
       debugShowCheckedModeBanner: false,
+      
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'), 
+      ],
+    
 
       theme: ThemeData(
         scaffoldBackgroundColor: AppCores.fundoPrimario,
