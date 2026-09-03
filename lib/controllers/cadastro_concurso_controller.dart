@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bizzu_concursos/models/concurso_model.dart';
 import 'package:bizzu_concursos/models/repositories/concurso_repository.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -7,9 +8,7 @@ import 'package:flutter/foundation.dart';
 
 class CadastroConcursoController {
   final ConcursoRepository _repository = ConcursoRepository();
-  
   final String _baseUrl = 'https://api-bizzu-concursos.vercel.app';
-
 
   Future<List<String>> buscarMateriasDaApi() async {
     try {
@@ -48,6 +47,68 @@ class CadastroConcursoController {
     return null;
   }
 
+  Future<bool> salvarConcursoImportado({
+    required String nome,
+    required String cargo,
+    required String dataProva,
+    required List<String> materiasSelecionadas,
+    required List<dynamic> materiasDaApi,
+    required String usuarioId,
+  }) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      final docRef = firestore
+          .collection('usuarios')
+          .doc(usuarioId)
+          .collection('concursos')
+          .doc();
+
+      final batch = firestore.batch();
+
+      batch.set(docRef, {
+        'id': docRef.id,
+        'nome': nome,
+        'cargo': cargo,
+        'dataProva': dataProva,
+        'materias': materiasSelecionadas.join('|'),
+      });
+
+      for (String nomeMateria in materiasSelecionadas) {
+        final materiaApi = materiasDaApi.firstWhere(
+          (m) => m['nome'] == nomeMateria,
+          orElse: () => null,
+        );
+
+        if (materiaApi != null && materiaApi['assuntos'] != null) {
+          List<dynamic> assuntos = materiaApi['assuntos'];
+
+          for (String nomeAssunto in assuntos) {
+            final assuntoRef = docRef.collection('assuntos').doc();
+            batch.set(assuntoRef, {
+              'materia': nomeMateria,
+              'nome': nomeAssunto,
+              'concluido': false,
+              'criadoEm': DateTime.now().millisecondsSinceEpoch,
+            });
+          }
+        }
+      }
+
+      await batch.commit();
+
+      try {
+        await FirebaseAnalytics.instance.logEvent(
+          name: 'importar_edital_completo',
+        );
+      } catch (_) {}
+
+      return true;
+    } catch (e) {
+      debugPrint('Erro no Batch Write: $e');
+      return false;
+    }
+  }
 
   Future<bool> salvarNovoConcurso({
     required String nome,
@@ -65,15 +126,6 @@ class CadastroConcursoController {
       ),
       usuarioId,
     );
-
-    if (sucesso) {
-      try {
-        await FirebaseAnalytics.instance.logEvent(name: 'cadastrar_concurso');
-        debugPrint('ANALYTICS: Concurso cadastrado com sucesso!');
-      } catch (e) {
-        debugPrint('ANALYTICS ERRO: $e');
-      }
-    }
     return sucesso;
   }
 
@@ -95,15 +147,6 @@ class CadastroConcursoController {
       ),
       usuarioId,
     );
-
-    if (sucesso) {
-      try {
-        await FirebaseAnalytics.instance.logEvent(name: 'editar_concurso');
-        debugPrint('ANALYTICS: Edição de concurso registrada!');
-      } catch (e) {
-        debugPrint('ANALYTICS ERRO: $e');
-      }
-    }
     return sucesso;
   }
 }

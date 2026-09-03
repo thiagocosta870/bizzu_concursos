@@ -25,8 +25,11 @@ class _DetalhesConcursoViewState extends State<DetalhesConcursoView> {
   }
 
   void _atualizarListaDeMaterias() {
-    _materiasList = widget.concurso.materias
-        .split(',')
+    String raw = widget.concurso.materias;
+    String separador = raw.contains('|') ? '|' : ',';
+
+    _materiasList = raw
+        .split(separador)
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
         .toList();
@@ -95,7 +98,8 @@ class _DetalhesConcursoViewState extends State<DetalhesConcursoView> {
   }
 
   Future<void> _salvarMateriasNoFirebase() async {
-    widget.concurso.materias = _materiasList.join(', ');
+    widget.concurso.materias = _materiasList.join('|');
+    
     final usuarioId = FirebaseAuth.instance.currentUser?.uid;
     if (usuarioId != null && widget.concurso.id != null) {
       await _controller.atualizarConcurso(

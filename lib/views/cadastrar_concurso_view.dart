@@ -17,15 +17,15 @@ class CadastrarConcursoView extends StatefulWidget {
 
 class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   final _formKey = GlobalKey<FormState>();
-
   final _nomeController = TextEditingController();
   final _dataController = TextEditingController();
   final _cargoController = TextEditingController();
-
   final _controller = CadastroConcursoController();
 
   List<String> _todasAsMaterias = [];
   List<String> _materiasSelecionadas = [];
+
+  List<dynamic> _materiasComAssuntosDaAPI = [];
 
   bool _estaCarregando = false;
   bool _carregandoMateriasGerais = true;
@@ -41,8 +41,11 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       _cargoController.text = widget.concursoParaEditar!.cargo;
 
       if (widget.concursoParaEditar!.materias.isNotEmpty) {
-        _materiasSelecionadas = widget.concursoParaEditar!.materias
-            .split(',')
+        String raw = widget.concursoParaEditar!.materias;
+        String separador = raw.contains('|') ? '|' : ',';
+
+        _materiasSelecionadas = raw
+            .split(separador)
             .map((e) => e.trim())
             .where((e) => e.isNotEmpty)
             .toList();
@@ -110,7 +113,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
     if (editaisDisponiveis.isEmpty && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Nenhum edital disponível no momento.'),
+          content: Text('Nenhum edital disponível.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -184,6 +187,8 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
         _nomeController.text = detalhes['orgao'];
         _cargoController.text = detalhes['cargo'];
 
+        _materiasComAssuntosDaAPI = detalhes['materias'];
+
         _materiasSelecionadas.clear();
         for (var materia in detalhes['materias']) {
           String nomeMateria = materia['nome'];
@@ -197,9 +202,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Edital importado com sucesso! Preencha a data da prova.',
-          ),
+          content: Text('Edital importado! Preencha a data da prova.'),
           backgroundColor: Colors.green,
         ),
       );
@@ -229,7 +232,6 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   _carregandoMateriasGerais
                       ? const Expanded(
                           child: Center(
@@ -298,7 +300,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
     if (_materiasSelecionadas.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, selecione pelo menos uma matéria.'),
+          content: Text('Selecione pelo menos uma matéria.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -311,17 +313,26 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
       if (usuarioId != null) {
         bool sucesso;
-
-        String materiasFormatadas = _materiasSelecionadas.join(', ');
-
+        String materiasFormatadas = _materiasSelecionadas.join('|');
         if (widget.concursoParaEditar == null) {
-          sucesso = await _controller.salvarNovoConcurso(
-            nome: _nomeController.text.trim(),
-            cargo: _cargoController.text.trim(),
-            dataProva: _dataController.text.trim(),
-            materias: materiasFormatadas,
-            usuarioId: usuarioId,
-          );
+          if (_materiasComAssuntosDaAPI.isNotEmpty) {
+            sucesso = await _controller.salvarConcursoImportado(
+              nome: _nomeController.text.trim(),
+              cargo: _cargoController.text.trim(),
+              dataProva: _dataController.text.trim(),
+              materiasSelecionadas: _materiasSelecionadas,
+              materiasDaApi: _materiasComAssuntosDaAPI,
+              usuarioId: usuarioId,
+            );
+          } else {
+            sucesso = await _controller.salvarNovoConcurso(
+              nome: _nomeController.text.trim(),
+              cargo: _cargoController.text.trim(),
+              dataProva: _dataController.text.trim(),
+              materias: materiasFormatadas,
+              usuarioId: usuarioId,
+            );
+          }
         } else {
           sucesso = await _controller.atualizarConcurso(
             id: widget.concursoParaEditar!.id!,
@@ -338,7 +349,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
             SnackBar(
               content: Text(
                 widget.concursoParaEditar == null
-                    ? 'Concurso cadastrado com sucesso!'
+                    ? 'Concurso importado com sucesso!'
                     : 'Concurso atualizado com sucesso!',
               ),
               backgroundColor: Colors.green,
