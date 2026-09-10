@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/controllers/cadastro_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/strategies/auth_strategy.dart';
-import 'package:bizzu_concursos/views/login_view.dart';
 import 'package:bizzu_concursos/utils/validadores.dart';
 
 class CadastroView extends StatefulWidget {
