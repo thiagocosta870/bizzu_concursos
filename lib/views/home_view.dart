@@ -6,6 +6,7 @@ import 'package:bizzu_concursos/views/cadastrar_concurso_view.dart';
 import 'package:bizzu_concursos/controllers/home_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/views/detalhes_concurso_view.dart';
+import 'package:bizzu_concursos/views/revisoes_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -149,7 +150,6 @@ class _HomeViewState extends State<HomeView> {
           const Center(
             child: Padding(
               padding: EdgeInsets.all(32.0),
-              // CONFLITO RESOLVIDO: Mesclamos o .adaptive com o AppCores
               child: CircularProgressIndicator.adaptive(
                 valueColor: AlwaysStoppedAnimation<Color>(
                   AppCores.amareloBizzu,
@@ -228,6 +228,23 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  Widget _buildBody() {
+    switch (_indiceAtual) {
+      case 0:
+        return _buildAbaInicio();
+      case 1:
+        return const RevisoesView();
+      case 2:
+      default:
+        return const Center(
+          child: Text(
+            'Perfil em construção 🚧',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -252,14 +269,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      body: _indiceAtual == 0
-          ? _buildAbaInicio()
-          : const Center(
-              child: Text(
-                'Em construção 🚧',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
+      body: _buildBody(),
       floatingActionButton: _indiceAtual == 0
           ? FloatingActionButton.extended(
               onPressed: () async {
@@ -303,8 +313,8 @@ class _HomeViewState extends State<HomeView> {
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
             BottomNavigationBarItem(
-              icon: Icon(Icons.assignment),
-              label: 'Simulados',
+              icon: Icon(Icons.history_edu),
+              label: 'Revisões',
             ),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
           ],

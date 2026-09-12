@@ -6,11 +6,13 @@ import 'package:bizzu_concursos/controllers/timer_estudo_controller.dart';
 class TimerEstudoView extends StatefulWidget {
   final String materia;
   final String assunto;
+  final String? revisaoId;
 
   const TimerEstudoView({
     super.key,
     required this.materia,
     required this.assunto,
+    this.revisaoId,
   });
 
   @override
@@ -22,7 +24,6 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
   final TimerEstudoController _controller = TimerEstudoController();
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
-
   bool _estaRodando = false;
   bool _perdeuFoco = false;
 
@@ -53,7 +54,7 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Foco perdido! Seu cronômetro foi pausado porque você saiu do aplicativo.',
+              'Foco perdido! Cronômetro pausado.',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -73,76 +74,117 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
-    setState(() {
-      _estaRodando = true;
-    });
+    setState(() => _estaRodando = true);
   }
 
   void _pausarTimer() {
     _stopwatch.stop();
     _timer?.cancel();
-    setState(() {
-      _estaRodando = false;
-    });
+    setState(() => _estaRodando = false);
   }
 
   void _finalizarEstudo() {
-    if (_estaRodando) {
-      _pausarTimer();
-    }
+    if (_estaRodando) _pausarTimer();
 
     final tempoEstudado = _stopwatch.elapsed;
     final minutos = tempoEstudado.inMinutes;
+    DateTime? dataSelecionada;
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF101820),
-        title: const Text(
-          'Finalizar estudo?',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          'Você estudou $minutos minuto(s) de ${widget.materia}.\n\n'
-          'Assunto: ${widget.assunto}\n\n'
-          'Deseja salvar e registrar esse tempo no seu Dashboard?',
-          style: const TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Voltar', style: TextStyle(color: Colors.grey)),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          backgroundColor: const Color(0xFF101820),
+          title: const Text(
+            'Finalizar estudo?',
+            style: TextStyle(color: Colors.white),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppCores.amareloBizzu,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Você estudou $minutos minuto(s) de ${widget.materia}.\nAssunto: ${widget.assunto}',
+                style: const TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                icon: const Icon(
+                  Icons.calendar_month,
+                  color: AppCores.amareloBizzu,
+                ),
+                label: Text(
+                  dataSelecionada == null
+                      ? 'Agendar próxima revisão (Opcional)'
+                      : 'Revisão: ${dataSelecionada!.day.toString().padLeft(2, '0')}/${dataSelecionada!.month.toString().padLeft(2, '0')}/${dataSelecionada!.year}',
+                  style: const TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: const BorderSide(color: AppCores.amareloBizzu),
+                ),
+                onPressed: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now().add(const Duration(days: 1)),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                    builder: (context, child) {
+                      return Theme(
+                        data: ThemeData.dark().copyWith(
+                          colorScheme: const ColorScheme.dark(
+                            primary: AppCores.amareloBizzu,
+                            onPrimary: Colors.black,
+                            surface: Color(0xFF101820),
+                            onSurface: Colors.white,
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) {
+                    setStateDialog(() => dataSelecionada = picked);
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Voltar', style: TextStyle(color: Colors.grey)),
             ),
-            onPressed: () async {
-              final navigator = Navigator.of(context);
-
-              await _controller.salvarTempoDeEstudo(
-                materia: widget.materia,
-                assunto: widget.assunto,
-                minutosEstudados: minutos,
-              );
-
-              if (mounted) {
-                navigator.pop();
-                navigator.pop(tempoEstudado);
-              }
-            },
-            child: const Text(
-              'Salvar e Sair',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppCores.amareloBizzu,
+              ),
+              onPressed: () async {
+                final navigator = Navigator.of(context);
+                await _controller.salvarTempoDeEstudo(
+                  materia: widget.materia,
+                  assunto: widget.assunto,
+                  minutosEstudados: minutos,
+                  revisaoId: widget.revisaoId,
+                  dataProximaRevisao: dataSelecionada,
+                );
+                if (mounted) {
+                  navigator.pop();
+                  navigator.pop(tempoEstudado);
+                }
+              },
+              child: const Text(
+                'Salvar e Sair',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -157,10 +199,7 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
       2,
       '0',
     );
-
-    if (horas == '00') {
-      return '$minutos:$segundos';
-    }
+    if (horas == '00') return '$minutos:$segundos';
     return '$horas:$minutos:$segundos';
   }
 
@@ -170,7 +209,6 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-
         if (_stopwatch.elapsedTicks > 0) {
           _finalizarEstudo();
         } else {
@@ -227,7 +265,6 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
                 ),
               ),
               const SizedBox(height: 64),
-
               Container(
                 width: 250,
                 height: 250,
@@ -249,7 +286,6 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
                 ),
               ),
               const SizedBox(height: 64),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -267,7 +303,6 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
                         ),
                       ),
                     ),
-
                   FloatingActionButton(
                     heroTag: 'btn_play_pause',
                     onPressed: _estaRodando ? _pausarTimer : _iniciarTimer,
