@@ -75,17 +75,22 @@ class RevisaoRepository {
         0,
         0,
       );
+
+      return _firestore
+          .collection('usuarios')
+          .doc(usuarioId)
+          .collection('revisoes')
+          .where('concluido', isEqualTo: false)
+          .where(
+            'dataAgendada',
+            isGreaterThanOrEqualTo: inicioDoDia.millisecondsSinceEpoch,
+          )
+          .where(
+            'dataAgendada',
+            isLessThanOrEqualTo: fimDoDia.millisecondsSinceEpoch,
+          )
+          .snapshots();
     }
-    return _firestore
-        .collection('usuarios')
-        .doc(usuarioId)
-        .collection('revisoes')
-        .where('concluido', isEqualTo: false)
-        .where(
-          'dataAgendada',
-          isLessThanOrEqualTo: fimDoDia.millisecondsSinceEpoch,
-        )
-        .snapshots();
   }
 
   Future<void> marcarComoConcluida(String usuarioId, String revisaoId) async {

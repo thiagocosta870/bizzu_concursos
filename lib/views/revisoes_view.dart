@@ -165,69 +165,69 @@ class _RevisoesViewState extends State<RevisoesView> {
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
+                    child: Material(
                       color: const Color(0xFF101820),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppCores.amareloBizzu.withOpacity(0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: const BorderSide(color: AppCores.amareloBizzu),
                       ),
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      title: Text(
-                        data['materia'],
-                        style: const TextStyle(
-                          color: AppCores.amareloBizzu,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
                         ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          data['assunto'],
+                        title: Text(
+                          data['materia'],
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                            color: AppCores.amareloBizzu,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.play_circle_outline,
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            data['assunto'],
+                            style: const TextStyle(
                               color: Colors.white,
-                              size: 28,
+                              fontSize: 16,
                             ),
-                            tooltip: 'Revisar Agora',
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TimerEstudoView(
-                                    materia: data['materia'],
-                                    assunto: data['assunto'],
-                                    revisaoId: id,
+                          ),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.play_circle_outline,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                              tooltip: 'Revisar Agora',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TimerEstudoView(
+                                      materia: data['materia'],
+                                      assunto: data['assunto'],
+                                      revisaoId: id,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.check_circle_outline,
-                              color: AppCores.amareloBizzu,
-                              size: 28,
+                                );
+                              },
                             ),
-                            tooltip: 'Marcar como Feito',
-                            onPressed: () => _controller.concluirRevisao(id),
-                          ),
-                        ],
+                            IconButton(
+                              icon: const Icon(
+                                Icons.check_circle_outline,
+                                color: AppCores.amareloBizzu,
+                                size: 28,
+                              ),
+                              tooltip: 'Marcar como Feito',
+                              onPressed: () => _controller.concluirRevisao(id),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
