@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/controllers/timer_estudo_controller.dart';
@@ -22,10 +21,6 @@ class TimerEstudoView extends StatefulWidget {
 class _TimerEstudoViewState extends State<TimerEstudoView>
     with WidgetsBindingObserver {
   final TimerEstudoController _controller = TimerEstudoController();
-  final Stopwatch _stopwatch = Stopwatch();
-  Timer? _timer;
-  bool _estaRodando = false;
-  bool _perdeuFoco = false;
 
   @override
   void initState() {
@@ -35,58 +30,44 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
 
   @override
   void dispose() {
-    _timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
-      if (_estaRodando) {
-        _pausarTimer();
-        _perdeuFoco = true;
-      }
-    } else if (state == AppLifecycleState.resumed) {
-      if (_perdeuFoco) {
-        _perdeuFoco = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Foco perdido! Cronômetro pausado.',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+    _controller.processarCicloDeVida(state);
+  }
+
+  void _verificarEExibirAlerta() {
+    if (_controller.exibirAlertaFoco) {
+      _controller.resetarAlerta();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Foco perdido! Cronômetro pausado.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              backgroundColor: Colors.redAccent,
+              duration: Duration(seconds: 4),
+              behavior: SnackBarBehavior.floating,
             ),
-            backgroundColor: Colors.redAccent,
-            duration: Duration(seconds: 4),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+          );
+        }
+      });
     }
   }
 
-  void _iniciarTimer() {
-    _stopwatch.start();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {});
-    });
-    setState(() => _estaRodando = true);
-  }
-
-  void _pausarTimer() {
-    _stopwatch.stop();
-    _timer?.cancel();
-    setState(() => _estaRodando = false);
-  }
-
   void _finalizarEstudo() {
-    if (_estaRodando) _pausarTimer();
+    if (_controller.estaRodando) _controller.pausarTimer();
 
-    final tempoEstudado = _stopwatch.elapsed;
+    final tempoEstudado = _controller.obterTempoTotal();
     final minutos = tempoEstudado.inMinutes;
     DateTime? dataSelecionada;
 
@@ -189,136 +170,140 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
     );
   }
 
-  String _formatarTempo() {
-    final horas = _stopwatch.elapsed.inHours.toString().padLeft(2, '0');
-    final minutos = (_stopwatch.elapsed.inMinutes % 60).toString().padLeft(
-      2,
-      '0',
-    );
-    final segundos = (_stopwatch.elapsed.inSeconds % 60).toString().padLeft(
-      2,
-      '0',
-    );
-    if (horas == '00') return '$minutos:$segundos';
-    return '$horas:$minutos:$segundos';
-  }
-
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (_stopwatch.elapsedTicks > 0) {
-          _finalizarEstudo();
-        } else {
-          Navigator.pop(context);
-        }
-      },
-      child: Scaffold(
-        backgroundColor: const Color(0xFF02080C),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: AppCores.amareloBizzu),
-          title: const Text(
-            'Foco nos Estudos',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF101820),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white12),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      widget.materia,
-                      style: const TextStyle(
-                        color: AppCores.amareloBizzu,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.assunto,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        _verificarEExibirAlerta();
+
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            if (_controller.obterTempoTotal().inSeconds > 0) {
+              _finalizarEstudo();
+            } else {
+              Navigator.pop(context);
+            }
+          },
+          child: Scaffold(
+            backgroundColor: const Color(0xFF02080C),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: AppCores.amareloBizzu),
+              title: const Text(
+                'Foco nos Estudos',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 64),
-              Container(
-                width: 250,
-                height: 250,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppCores.amareloBizzu, width: 3),
-                ),
-                child: Center(
-                  child: Text(
-                    _formatarTempo(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 64),
-              Row(
+              centerTitle: true,
+            ),
+            body: Center(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (!_estaRodando && _stopwatch.elapsedTicks > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 24),
-                      child: FloatingActionButton(
-                        heroTag: 'btn_stop',
-                        onPressed: _finalizarEstudo,
-                        backgroundColor: Colors.redAccent,
-                        child: const Icon(
-                          Icons.stop,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF101820),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.materia,
+                          style: const TextStyle(
+                            color: AppCores.amareloBizzu,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.assunto,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 64),
+                  Container(
+                    width: 250,
+                    height: 250,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppCores.amareloBizzu,
+                        width: 3,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        _controller.formatarTempo(),
+                        style: const TextStyle(
                           color: Colors.white,
-                          size: 32,
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          fontFeatures: [FontFeature.tabularFigures()],
                         ),
                       ),
                     ),
-                  FloatingActionButton(
-                    heroTag: 'btn_play_pause',
-                    onPressed: _estaRodando ? _pausarTimer : _iniciarTimer,
-                    backgroundColor: AppCores.amareloBizzu,
-                    child: Icon(
-                      _estaRodando ? Icons.pause : Icons.play_arrow,
-                      color: Colors.black,
-                      size: 32,
-                    ),
+                  ),
+                  const SizedBox(height: 64),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (!_controller.estaRodando &&
+                          _controller.obterTempoTotal().inSeconds > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 24),
+                          child: FloatingActionButton(
+                            heroTag: 'btn_stop',
+                            onPressed: _finalizarEstudo,
+                            backgroundColor: Colors.redAccent,
+                            child: const Icon(
+                              Icons.stop,
+                              color: Colors.white,
+                              size: 32,
+                            ),
+                          ),
+                        ),
+                      FloatingActionButton(
+                        heroTag: 'btn_play_pause',
+                        onPressed: _controller.estaRodando
+                            ? _controller.pausarTimer
+                            : _controller.iniciarTimer,
+                        backgroundColor: AppCores.amareloBizzu,
+                        child: Icon(
+                          _controller.estaRodando
+                              ? Icons.pause
+                              : Icons.play_arrow,
+                          color: Colors.black,
+                          size: 32,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
