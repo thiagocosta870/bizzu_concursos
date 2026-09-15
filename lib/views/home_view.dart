@@ -7,6 +7,7 @@ import 'package:bizzu_concursos/controllers/home_controller.dart';
 import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/views/detalhes_concurso_view.dart';
 import 'package:bizzu_concursos/views/revisoes_view.dart';
+import 'package:bizzu_concursos/views/dashboard_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -228,23 +229,6 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildBody() {
-    switch (_indiceAtual) {
-      case 0:
-        return _buildAbaInicio();
-      case 1:
-        return const RevisoesView();
-      case 2:
-      default:
-        return const Center(
-          child: Text(
-            'Perfil em construção 🚧',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -269,7 +253,23 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      body: _buildBody(),
+
+      // A SOLUÇÃO DE PERFORMANCE: O IndexedStack mantém as abas vivas sem recarregá-las!
+      body: IndexedStack(
+        index: _indiceAtual,
+        children: [
+          _buildAbaInicio(),
+          const DashboardView(),
+          const RevisoesView(),
+          const Center(
+            child: Text(
+              'Perfil em construção 🚧',
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+        ],
+      ),
+
       floatingActionButton: _indiceAtual == 0
           ? FloatingActionButton.extended(
               onPressed: () async {
@@ -312,6 +312,10 @@ class _HomeViewState extends State<HomeView> {
           },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Dashboard',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.history_edu),
               label: 'Revisões',

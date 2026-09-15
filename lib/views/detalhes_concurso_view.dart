@@ -99,7 +99,7 @@ class _DetalhesConcursoViewState extends State<DetalhesConcursoView> {
 
   Future<void> _salvarMateriasNoFirebase() async {
     widget.concurso.materias = _materiasList.join('|');
-    
+
     final usuarioId = FirebaseAuth.instance.currentUser?.uid;
     if (usuarioId != null && widget.concurso.id != null) {
       await _controller.atualizarConcurso(
@@ -191,226 +191,155 @@ class _DetalhesConcursoViewState extends State<DetalhesConcursoView> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF101820),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white12),
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF101820),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white12),
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.account_balance,
-                          size: 64,
-                          color: AppCores.amareloBizzu,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          widget.concurso.nome,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.concurso.cargo,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppCores.amareloBizzu,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            widget.concurso.dataProva.isNotEmpty
-                                ? widget.concurso.dataProva
-                                : 'Data a definir',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Matérias',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: _exibirDialogoNovaMateria,
-                        icon: const Icon(
-                          Icons.add_circle_outline,
-                          color: AppCores.amareloBizzu,
-                        ),
-                        tooltip: 'Adicionar matéria manual',
-                      ),
-                    ],
+                  const Icon(
+                    Icons.account_balance,
+                    size: 64,
+                    color: AppCores.amareloBizzu,
                   ),
                   const SizedBox(height: 16),
-
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _materiasList.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF101820),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white12),
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          leading: CircleAvatar(
-                            backgroundColor: AppCores.amareloBizzu.withOpacity(
-                              0.2,
-                            ),
-                            child: const Icon(
-                              Icons.book,
-                              color: AppCores.amareloBizzu,
-                            ),
-                          ),
-                          title: Text(
-                            _materiasList[index],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.redAccent,
-                                  size: 22,
-                                ),
-                                onPressed: () =>
-                                    _confirmarExclusaoMateria(index),
-                              ),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.grey,
-                                size: 16,
-                              ),
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AssuntosMateriaView(
-                                  concurso: widget.concurso,
-                                  nomeMateria: _materiasList[index],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          Container(
-            padding: const EdgeInsets.all(24.0),
-            decoration: const BoxDecoration(
-              color: Color(0xFF02080C),
-              border: Border(top: BorderSide(color: Colors.white12)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(
-                        color: AppCores.amareloBizzu,
-                        width: 2,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Revisões',
-                      style: TextStyle(
-                        color: AppCores.amareloBizzu,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                  Text(
+                    widget.concurso.nome,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppCores.amareloBizzu,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.concurso.cargo,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 10,
                     ),
-                    child: const Text(
-                      'Dashboard',
-                      style: TextStyle(
+                    decoration: BoxDecoration(
+                      color: AppCores.amareloBizzu,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      widget.concurso.dataProva.isNotEmpty
+                          ? widget.concurso.dataProva
+                          : 'Data a definir',
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Matérias',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: _exibirDialogoNovaMateria,
+                  icon: const Icon(
+                    Icons.add_circle_outline,
+                    color: AppCores.amareloBizzu,
+                  ),
+                  tooltip: 'Adicionar matéria manual',
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _materiasList.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101820),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white12),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    leading: CircleAvatar(
+                      backgroundColor: AppCores.amareloBizzu.withOpacity(0.2),
+                      child: const Icon(
+                        Icons.book,
+                        color: AppCores.amareloBizzu,
+                      ),
+                    ),
+                    title: Text(
+                      _materiasList[index],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.redAccent,
+                            size: 22,
+                          ),
+                          onPressed: () => _confirmarExclusaoMateria(index),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AssuntosMateriaView(
+                            concurso: widget.concurso,
+                            nomeMateria: _materiasList[index],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

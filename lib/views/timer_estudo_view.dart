@@ -3,12 +3,14 @@ import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/controllers/timer_estudo_controller.dart';
 
 class TimerEstudoView extends StatefulWidget {
+  final String concursoId; 
   final String materia;
   final String assunto;
   final String? revisaoId;
 
   const TimerEstudoView({
     super.key,
+    required this.concursoId,
     required this.materia,
     required this.assunto,
     this.revisaoId,
@@ -144,13 +146,16 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
               ),
               onPressed: () async {
                 final navigator = Navigator.of(context);
+
                 await _controller.salvarTempoDeEstudo(
+                  concursoId: widget.concursoId,
                   materia: widget.materia,
                   assunto: widget.assunto,
                   minutosEstudados: minutos,
                   revisaoId: widget.revisaoId,
                   dataProximaRevisao: dataSelecionada,
                 );
+
                 if (mounted) {
                   navigator.pop();
                   navigator.pop(tempoEstudado);

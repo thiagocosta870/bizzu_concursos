@@ -136,13 +136,19 @@ class TimerEstudoController extends ChangeNotifier {
   }
 
   Future<bool> salvarTempoDeEstudo({
+    required String concursoId,
     required String materia,
     required String assunto,
     required int minutosEstudados,
     String? revisaoId,
     DateTime? dataProximaRevisao,
   }) async {
-    if (minutosEstudados <= 0) return false;
+    int minutosParaSalvar = minutosEstudados;
+    if (minutosParaSalvar <= 0 && obterTempoTotal().inSeconds > 0) {
+      minutosParaSalvar = 1;
+    }
+
+    if (minutosParaSalvar <= 0) return false;
 
     try {
       final usuario = FirebaseAuth.instance.currentUser;
@@ -150,9 +156,10 @@ class TimerEstudoController extends ChangeNotifier {
 
       bool sucesso = await _repository.registrarSessaoEstudo(
         usuarioId: usuario.uid,
+        concursoId: concursoId,
         materia: materia,
         assunto: assunto,
-        minutos: minutosEstudados,
+        minutos: minutosParaSalvar,
       );
 
       if (sucesso) {

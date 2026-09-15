@@ -6,6 +6,7 @@ class HistoricoRepository {
 
   Future<bool> registrarSessaoEstudo({
     required String usuarioId,
+    required String concursoId,
     required String materia,
     required String assunto,
     required int minutos,
@@ -16,6 +17,7 @@ class HistoricoRepository {
           .doc(usuarioId)
           .collection('historico_estudos')
           .add({
+            'concursoId': concursoId,
             'materia': materia,
             'assunto': assunto,
             'minutos': minutos,
@@ -28,5 +30,33 @@ class HistoricoRepository {
       debugPrint('Erro no repositório ao salvar histórico: $e');
       return false;
     }
+  }
+
+  Stream<QuerySnapshot> streamHistoricoRecente(
+    String usuarioId, {
+    int limite = 5,
+  }) {
+    return _firestore
+        .collection('usuarios')
+        .doc(usuarioId)
+        .collection('historico_estudos')
+        .orderBy('timestampLocal', descending: true)
+        .limit(limite)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> streamSessoesPorPeriodo(
+    String usuarioId,
+    DateTime dataInicio,
+  ) {
+    return _firestore
+        .collection('usuarios')
+        .doc(usuarioId)
+        .collection('historico_estudos')
+        .where(
+          'timestampLocal',
+          isGreaterThanOrEqualTo: dataInicio.millisecondsSinceEpoch,
+        )
+        .snapshots();
   }
 }

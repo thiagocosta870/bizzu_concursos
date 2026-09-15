@@ -25,16 +25,13 @@ class BizzuApp extends StatelessWidget {
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
       ],
       debugShowCheckedModeBanner: false,
-      
+
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('pt', 'BR'), 
-      ],
-    
+      supportedLocales: const [Locale('pt', 'BR')],
 
       theme: ThemeData(
         scaffoldBackgroundColor: AppCores.fundoPrimario,

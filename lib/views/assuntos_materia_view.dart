@@ -255,6 +255,7 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => TimerEstudoView(
+                                concursoId: widget.concurso.id ?? '',
                                 materia: widget.nomeMateria,
                                 assunto: nomeAssunto,
                               ),
