@@ -8,6 +8,7 @@ import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/views/detalhes_concurso_view.dart';
 import 'package:bizzu_concursos/views/revisoes_view.dart';
 import 'package:bizzu_concursos/views/dashboard_view.dart';
+import 'package:bizzu_concursos/views/perfil_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -231,97 +232,105 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF02080C),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 90,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Image.asset(
-          'assets/images/logo_horizontal.png',
-          height: 120,
-          width: 160,
-          fit: BoxFit.contain,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            onPressed: _deslogar,
-            tooltip: 'Sair da conta',
-          ),
-        ],
-      ),
-
-      // A SOLUÇÃO DE PERFORMANCE: O IndexedStack mantém as abas vivas sem recarregá-las!
-      body: IndexedStack(
-        index: _indiceAtual,
-        children: [
-          _buildAbaInicio(),
-          const DashboardView(),
-          const RevisoesView(),
-          const Center(
-            child: Text(
-              'Perfil em construção 🚧',
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
-          ),
-        ],
-      ),
-
-      floatingActionButton: _indiceAtual == 0
-          ? FloatingActionButton.extended(
-              onPressed: () async {
-                final atualizou = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CadastrarConcursoView(),
-                  ),
-                );
-
-                if (atualizou == true) {
-                  _carregarConcursos();
-                }
-              },
-              backgroundColor: AppCores.amareloBizzu,
-              icon: const Icon(Icons.add, color: Colors.black),
-              label: const Text(
-                'Cadastrar concurso',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
-          : null,
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.white24, width: 0.5)),
-        ),
-        child: BottomNavigationBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_indiceAtual != 0) {
+          setState(() {
+            _indiceAtual = 0;
+          });
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF02080C),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: 90,
           backgroundColor: Colors.transparent,
-          selectedItemColor: AppCores.amareloBizzu,
-          unselectedItemColor: Colors.grey,
-          currentIndex: _indiceAtual,
-          type: BottomNavigationBarType.fixed,
-          onTap: (indice) {
-            setState(() {
-              _indiceAtual = indice;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart),
-              label: 'Dashboard',
+          elevation: 0,
+          centerTitle: true,
+          title: Image.asset(
+            'assets/images/logo_horizontal.png',
+            height: 120,
+            width: 160,
+            fit: BoxFit.contain,
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.redAccent),
+              onPressed: _deslogar,
+              tooltip: 'Sair da conta',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history_edu),
-              label: 'Revisões',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
           ],
+        ),
+
+        body: IndexedStack(
+          index: _indiceAtual,
+          children: [
+            _buildAbaInicio(),
+            const DashboardView(),
+            const RevisoesView(),
+            const PerfilView(),
+          ],
+        ),
+
+        floatingActionButton: _indiceAtual == 0
+            ? FloatingActionButton.extended(
+                onPressed: () async {
+                  final atualizou = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CadastrarConcursoView(),
+                    ),
+                  );
+
+                  if (atualizou == true) {
+                    _carregarConcursos();
+                  }
+                },
+                backgroundColor: AppCores.amareloBizzu,
+                icon: const Icon(Icons.add, color: Colors.black),
+                label: const Text(
+                  'Cadastrar concurso',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : null,
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.white24, width: 0.5)),
+          ),
+          child: BottomNavigationBar(
+            backgroundColor: Colors.transparent,
+            selectedItemColor: AppCores.amareloBizzu,
+            unselectedItemColor: Colors.grey,
+            currentIndex: _indiceAtual,
+            type: BottomNavigationBarType.fixed,
+            onTap: (indice) {
+              setState(() {
+                _indiceAtual = indice;
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.bar_chart),
+                label: 'Dashboard',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.history_edu),
+                label: 'Revisões',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Perfil',
+              ),
+            ],
+          ),
         ),
       ),
     );
