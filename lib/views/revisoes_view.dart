@@ -68,6 +68,70 @@ class _RevisoesViewState extends State<RevisoesView> {
     );
   }
 
+  Future<void> _confirmarConclusao(
+    String id,
+    String materia,
+    String assunto,
+  ) async {
+    final confirmou = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF101820),
+        title: const Text(
+          'Concluir Revisão?',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Deseja marcar a revisão de "$assunto" como concluída?',
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppCores.amareloBizzu,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Concluir',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmou != true || !mounted) return;
+
+    await _controller.concluirRevisao(id);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Revisão concluída!'),
+        backgroundColor: const Color(0xFF2C3E50),
+        duration: const Duration(seconds: 5),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        action: SnackBarAction(
+          label: 'DESFAZER',
+          textColor: AppCores.amareloBizzu,
+          onPressed: () async {
+            await _controller.desfazerConclusao(id);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -225,7 +289,11 @@ class _RevisoesViewState extends State<RevisoesView> {
                                 size: 28,
                               ),
                               tooltip: 'Marcar como Feito',
-                              onPressed: () => _controller.concluirRevisao(id),
+                              onPressed: () => _confirmarConclusao(
+                                id,
+                                data['materia'],
+                                data['assunto'],
+                              ),
                             ),
                           ],
                         ),

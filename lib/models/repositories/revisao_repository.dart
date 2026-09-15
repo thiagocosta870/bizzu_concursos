@@ -101,4 +101,13 @@ class RevisaoRepository {
         .doc(revisaoId)
         .update({'concluido': true});
   }
+
+  Future<void> desfazerConclusao(String usuarioId, String revisaoId) async {
+    await _firestore
+        .collection('usuarios')
+        .doc(usuarioId)
+        .collection('revisoes')
+        .doc(revisaoId)
+        .update({'concluido': false});
+  }
 }

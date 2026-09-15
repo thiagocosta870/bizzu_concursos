@@ -461,13 +461,16 @@ class _DashboardViewState extends State<DashboardView> {
                           pieTouchData: PieTouchData(enabled: false),
                           sectionsSpace: 4,
                           centerSpaceRadius: 50,
-                          sections: _gerarSecoesPizza(tempoPorMateria),
+                          sections: _gerarSecoesPizza(
+                            tempoPorMateria,
+                            totalMinutos,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
                     Wrap(
-                      spacing: 16,
+                      spacing: 8,
                       runSpacing: 8,
                       alignment: WrapAlignment.center,
                       children: _gerarLegendaPizza(tempoPorMateria),
@@ -476,7 +479,7 @@ class _DashboardViewState extends State<DashboardView> {
                     const SizedBox(height: 48),
 
                     const Text(
-                      'Produtividade por Dia',
+                      'Produtividade por Dia da Semana',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -659,18 +662,28 @@ class _DashboardViewState extends State<DashboardView> {
 
   List<PieChartSectionData> _gerarSecoesPizza(
     Map<String, int> tempoPorMateria,
+    int totalMinutos,
   ) {
+    final entradas = tempoPorMateria.entries.where((e) => e.value > 0).toList();
+    entradas.sort((a, b) => b.value.compareTo(a.value));
+
     int index = 0;
-    return tempoPorMateria.entries.where((entry) => entry.value > 0).map((
-      entry,
-    ) {
+    return entradas.map((entry) {
       final cor = _coresGrafico[index % _coresGrafico.length];
       index++;
+
+      final porcentagem = totalMinutos > 0
+          ? (entry.value / totalMinutos) * 100
+          : 0;
+
+      final mostrarTexto = porcentagem > 6;
+
       return PieChartSectionData(
         color: cor,
         value: entry.value.toDouble(),
-        title: '${entry.value}m',
-        radius: 40,
+        title: mostrarTexto ? _controller.formatarTempoTotal(entry.value) : '',
+        showTitle: mostrarTexto,
+        radius: mostrarTexto ? 50 : 40,
         titleStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
@@ -681,26 +694,35 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   List<Widget> _gerarLegendaPizza(Map<String, int> tempoPorMateria) {
+    final entradas = tempoPorMateria.entries.where((e) => e.value > 0).toList();
+    entradas.sort((a, b) => b.value.compareTo(a.value));
+
     int index = 0;
-    return tempoPorMateria.entries.where((entry) => entry.value > 0).map((
-      entry,
-    ) {
+    return entradas.map((entry) {
       final cor = _coresGrafico[index % _coresGrafico.length];
       index++;
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            entry.key,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-        ],
+
+      return Padding(
+        padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${entry.key} (${_controller.formatarTempoTotal(entry.value)})',
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       );
     }).toList();
   }

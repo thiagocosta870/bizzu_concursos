@@ -17,4 +17,10 @@ class RevisaoController {
       await _repository.marcarComoConcluida(_uid!, revisaoId);
     }
   }
+
+  Future<void> desfazerConclusao(String revisaoId) async {
+    if (_uid != null) {
+      await _repository.desfazerConclusao(_uid!, revisaoId);
+    }
+  }
 }
