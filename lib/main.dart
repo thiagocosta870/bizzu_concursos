@@ -6,6 +6,8 @@ import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:bizzu_concursos/services/push_notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

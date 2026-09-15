@@ -9,6 +9,7 @@ import 'package:bizzu_concursos/views/detalhes_concurso_view.dart';
 import 'package:bizzu_concursos/views/revisoes_view.dart';
 import 'package:bizzu_concursos/views/dashboard_view.dart';
 import 'package:bizzu_concursos/views/perfil_view.dart';
+import 'package:bizzu_concursos/services/push_notification_service.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -26,6 +27,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    PushNotificationService().inicializar();
     _carregarConcursos();
   }
 
