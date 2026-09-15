@@ -20,11 +20,11 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   final _nomeController = TextEditingController();
   final _dataController = TextEditingController();
   final _cargoController = TextEditingController();
+
   final _controller = CadastroConcursoController();
 
   List<String> _todasAsMaterias = [];
   List<String> _materiasSelecionadas = [];
-
   List<dynamic> _materiasComAssuntosDaAPI = [];
 
   bool _estaCarregando = false;
@@ -40,16 +40,10 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       _dataController.text = widget.concursoParaEditar!.dataProva;
       _cargoController.text = widget.concursoParaEditar!.cargo;
 
-      if (widget.concursoParaEditar!.materias.isNotEmpty) {
-        String raw = widget.concursoParaEditar!.materias;
-        String separador = raw.contains('|') ? '|' : ',';
-
-        _materiasSelecionadas = raw
-            .split(separador)
-            .map((e) => e.trim())
-            .where((e) => e.isNotEmpty)
-            .toList();
-      }
+      // 🛡️ A View agora só pede pro Controller mastigar o texto das matérias
+      _materiasSelecionadas = _controller.processarMateriasSalvas(
+        widget.concursoParaEditar!.materias,
+      );
     }
   }
 
@@ -97,10 +91,10 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
     if (dataSelecionada != null) {
       setState(() {
-        String dia = dataSelecionada.day.toString().padLeft(2, '0');
-        String mes = dataSelecionada.month.toString().padLeft(2, '0');
-        String ano = dataSelecionada.year.toString();
-        _dataController.text = "$dia/$mes/$ano";
+        // 🛡️ A View agora só recebe a string pronta do Controller
+        _dataController.text = _controller.formatarDataParaExibicao(
+          dataSelecionada,
+        );
       });
     }
   }
@@ -179,18 +173,23 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
   Future<void> _importarDetalhesDoEditalSelecionado(int id) async {
     setState(() => _estaCarregando = true);
-    final detalhes = await _controller.buscarDetalhesDoEdital(id);
+    // 🛡️ A View chama o Controller, e ele devolve tudo formatadinho (incluindo a data)!
+    final dadosProcessados = await _controller.buscarEProcessarEdital(id);
     setState(() => _estaCarregando = false);
 
-    if (detalhes != null && mounted) {
+    if (dadosProcessados != null && mounted) {
       setState(() {
-        _nomeController.text = detalhes['orgao'];
-        _cargoController.text = detalhes['cargo'];
+        _nomeController.text = dadosProcessados['orgao'];
+        _cargoController.text = dadosProcessados['cargo'];
 
-        _materiasComAssuntosDaAPI = detalhes['materias'];
+        if (dadosProcessados['dataProva'].toString().isNotEmpty) {
+          _dataController.text = dadosProcessados['dataProva'];
+        }
+
+        _materiasComAssuntosDaAPI = dadosProcessados['materias'];
 
         _materiasSelecionadas.clear();
-        for (var materia in detalhes['materias']) {
+        for (var materia in _materiasComAssuntosDaAPI) {
           String nomeMateria = materia['nome'];
           _materiasSelecionadas.add(nomeMateria);
 
@@ -202,7 +201,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Edital importado! Preencha a data da prova.'),
+          content: Text('Edital e data importados com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );

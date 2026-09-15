@@ -15,8 +15,43 @@ class CadastroConcursoController {
     return await _editalRepository.buscarListaDeEditais();
   }
 
-  Future<Map<String, dynamic>?> buscarDetalhesDoEdital(int id) async {
-    return await _editalRepository.buscarDetalhesDoEdital(id);
+  Future<Map<String, dynamic>?> buscarEProcessarEdital(int id) async {
+    final detalhes = await _editalRepository.buscarDetalhesDoEdital(id);
+    if (detalhes == null) return null;
+
+    String dataFormatada = '';
+    if (detalhes['dataProva'] != null) {
+      try {
+        List<String> partes = detalhes['dataProva'].toString().split('-');
+        if (partes.length == 3) {
+          dataFormatada = "${partes[2]}/${partes[1]}/${partes[0]}";
+        }
+      } catch (_) {}
+    }
+
+    return {
+      'orgao': detalhes['orgao'] ?? '',
+      'cargo': detalhes['cargo'] ?? '',
+      'dataProva': dataFormatada,
+      'materias': detalhes['materias'] ?? [],
+    };
+  }
+
+  String formatarDataParaExibicao(DateTime data) {
+    String dia = data.day.toString().padLeft(2, '0');
+    String mes = data.month.toString().padLeft(2, '0');
+    String ano = data.year.toString();
+    return "$dia/$mes/$ano";
+  }
+
+  List<String> processarMateriasSalvas(String raw) {
+    if (raw.isEmpty) return [];
+    String separador = raw.contains('|') ? '|' : ',';
+    return raw
+        .split(separador)
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
   }
 
   Future<bool> salvarConcursoImportado({
