@@ -209,6 +209,7 @@ class _RevisoesViewState extends State<RevisoesView> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => TimerEstudoView(
+                                      concursoId: data['concursoId'] ?? '',
                                       materia: data['materia'],
                                       assunto: data['assunto'],
                                       revisaoId: id,
