@@ -4,7 +4,9 @@ import 'package:bizzu_concursos/views/widgets/campo_texto_customizado.dart';
 import 'package:bizzu_concursos/views/widgets/botao_customizado.dart';
 
 class EsqueciSenhaView extends StatefulWidget {
-  const EsqueciSenhaView({super.key});
+  final String? tituloPersonalizado;
+
+  const EsqueciSenhaView({super.key, this.tituloPersonalizado});
 
   @override
   State<EsqueciSenhaView> createState() => _EsqueciSenhaViewState();
@@ -67,10 +69,10 @@ class _EsqueciSenhaViewState extends State<EsqueciSenhaView> {
                       _buildLogo(),
                       const SizedBox(height: 35),
 
-                      const Text(
-                        'Esqueceu sua senha?',
+                      Text(
+                        widget.tituloPersonalizado ?? 'Esqueceu sua senha?',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
