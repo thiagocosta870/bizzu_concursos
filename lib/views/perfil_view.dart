@@ -4,6 +4,7 @@ import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/controllers/perfil_controller.dart';
 import 'package:bizzu_concursos/views/esqueci_senha_view.dart';
 import 'package:bizzu_concursos/views/bem_vindo_view.dart';
+import 'package:bizzu_concursos/views/notificacoes_view.dart';
 
 class PerfilView extends StatefulWidget {
   const PerfilView({super.key});
@@ -439,7 +440,14 @@ class _PerfilViewState extends State<PerfilView> {
           _buildMenuItem(
             icon: Icons.notifications_none,
             title: 'Notificações',
-            onTap: () => _mostrarAvisoEmBreve('Configurar notificações'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificacoesView(),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 32),

@@ -12,7 +12,8 @@ exports.notificarRevisoesDiarias = onSchedule({
         console.log("Iniciando a varredura diária de revisões...");
 
         const usuariosSnapshot = await db.collection("usuarios").get();
-        const promessasNotificacoes = [];
+        
+        const promessasGlobais = []; 
 
         const hoje = new Date();
         const fimDoDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59).getTime();
@@ -33,13 +34,15 @@ exports.notificarRevisoesDiarias = onSchedule({
             const quantidade = revisoesSnapshot.size;
 
             if (quantidade > 0) {
+                const tituloAviso = "📚 Hora da Revisão!";
+                const corpoAviso = `Você tem ${quantidade} assunto(s) aguardando revisão hoje. Bora gabaritar?`;
+
                 const mensagem = {
                     token: fcmToken,
                     notification: {
-                        title: "📚 Hora da Revisão!",
-                        body: `Você tem ${quantidade} assunto(s) aguardando revisão hoje. Bora gabaritar?`,
+                        title: tituloAviso,
+                        body: corpoAviso,
                     },
-
                     android: {
                         priority: "high",
                         notification: {
@@ -48,15 +51,27 @@ exports.notificarRevisoesDiarias = onSchedule({
                             icon: "ic_notification"
                         }
                     }
-
                 };
 
-               promessasNotificacoes.push(admin.messaging().send(mensagem));
+                promessasGlobais.push(admin.messaging().send(mensagem));
+
+
+                const salvarNoBanco = db.collection("usuarios")
+                    .doc(usuarioDoc.id)
+                    .collection("notificacoes")
+                    .add({
+                        titulo: tituloAviso,
+                        mensagem: corpoAviso,
+                        lida: false,
+                        timestamp: admin.firestore.FieldValue.serverTimestamp()
+                    });
+
+                promessasGlobais.push(salvarNoBanco);
             }
         }
 
-        await Promise.all(promessasNotificacoes);
-        console.log(`✅ Sucesso! Notificações enviadas para ${promessasNotificacoes.length} usuários.`);
+        await Promise.all(promessasGlobais);
+        console.log(`✅ Sucesso! Varredura concluída. ${promessasGlobais.length / 2} usuários notificados.`);
 
     } catch (erro) {
         console.error("🔴 Erro ao enviar notificações diárias:", erro);
