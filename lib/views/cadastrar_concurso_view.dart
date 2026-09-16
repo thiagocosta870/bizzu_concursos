@@ -20,7 +20,6 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   final _nomeController = TextEditingController();
   final _dataController = TextEditingController();
   final _cargoController = TextEditingController();
-
   final _controller = CadastroConcursoController();
 
   List<String> _todasAsMaterias = [];
