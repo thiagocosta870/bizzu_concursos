@@ -39,7 +39,6 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       _dataController.text = widget.concursoParaEditar!.dataProva;
       _cargoController.text = widget.concursoParaEditar!.cargo;
 
-      // 🛡️ A View agora só pede pro Controller mastigar o texto das matérias
       _materiasSelecionadas = _controller.processarMateriasSalvas(
         widget.concursoParaEditar!.materias,
       );
@@ -90,7 +89,6 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
     if (dataSelecionada != null) {
       setState(() {
-        // 🛡️ A View agora só recebe a string pronta do Controller
         _dataController.text = _controller.formatarDataParaExibicao(
           dataSelecionada,
         );
@@ -122,49 +120,51 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Selecione o Edital',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        return SafeArea(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Selecione o Edital',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: editaisDisponiveis.length,
-                itemBuilder: (context, index) {
-                  final edital = editaisDisponiveis[index];
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.assignment,
-                      color: AppCores.amareloBizzu,
-                    ),
-                    title: Text(
-                      edital['orgao'],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+              Expanded(
+                child: ListView.builder(
+                  itemCount: editaisDisponiveis.length,
+                  itemBuilder: (context, index) {
+                    final edital = editaisDisponiveis[index];
+                    return ListTile(
+                      leading: const Icon(
+                        Icons.assignment,
+                        color: AppCores.amareloBizzu,
                       ),
-                    ),
-                    subtitle: Text(
-                      '${edital['cargo']} - Nível ${edital['nivel']}',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _importarDetalhesDoEditalSelecionado(edital['id']);
-                    },
-                  );
-                },
+                      title: Text(
+                        edital['orgao'],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${edital['cargo']} - Nível ${edital['nivel']}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _importarDetalhesDoEditalSelecionado(edital['id']);
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
@@ -172,7 +172,6 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
 
   Future<void> _importarDetalhesDoEditalSelecionado(int id) async {
     setState(() => _estaCarregando = true);
-    // 🛡️ A View chama o Controller, e ele devolve tudo formatadinho (incluindo a data)!
     final dadosProcessados = await _controller.buscarEProcessarEdital(id);
     setState(() => _estaCarregando = false);
 
@@ -217,75 +216,78 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Text(
-                    'Selecione as Matérias',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _carregandoMateriasGerais
-                      ? const Expanded(
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: AppCores.amareloBizzu,
-                            ),
-                          ),
-                        )
-                      : Expanded(
-                          child: ListView.builder(
-                            itemCount: _todasAsMaterias.length,
-                            itemBuilder: (context, index) {
-                              final materia = _todasAsMaterias[index];
-                              final isSelected = _materiasSelecionadas.contains(
-                                materia,
-                              );
-
-                              return CheckboxListTile(
-                                title: Text(
-                                  materia,
-                                  style: const TextStyle(color: Colors.white70),
-                                ),
-                                value: isSelected,
-                                activeColor: AppCores.amareloBizzu,
-                                checkColor: Colors.black,
-                                side: const BorderSide(color: Colors.grey),
-                                onChanged: (bool? value) {
-                                  setModalState(() {
-                                    if (value == true) {
-                                      _materiasSelecionadas.add(materia);
-                                    } else {
-                                      _materiasSelecionadas.remove(materia);
-                                    }
-                                  });
-                                  setState(() {});
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppCores.amareloBizzu,
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text(
-                      'Confirmar',
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Selecione as Matérias',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    _carregandoMateriasGerais
+                        ? const Expanded(
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppCores.amareloBizzu,
+                              ),
+                            ),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                              itemCount: _todasAsMaterias.length,
+                              itemBuilder: (context, index) {
+                                final materia = _todasAsMaterias[index];
+                                final isSelected = _materiasSelecionadas
+                                    .contains(materia);
+
+                                return CheckboxListTile(
+                                  title: Text(
+                                    materia,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  value: isSelected,
+                                  activeColor: AppCores.amareloBizzu,
+                                  checkColor: Colors.black,
+                                  side: const BorderSide(color: Colors.grey),
+                                  onChanged: (bool? value) {
+                                    setModalState(() {
+                                      if (value == true) {
+                                        _materiasSelecionadas.add(materia);
+                                      } else {
+                                        _materiasSelecionadas.remove(materia);
+                                      }
+                                    });
+                                    setState(() {});
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppCores.amareloBizzu,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: const Text(
+                        'Confirmar',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -386,167 +388,173 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
         ),
         iconTheme: const IconThemeData(color: AppCores.amareloBizzu),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                isEditando ? 'Editar concurso' : 'Novo concurso',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              CampoTextoCustomizado(
-                controller: _nomeController,
-                hintText: 'Nome do concurso',
-                icone: Icons.account_balance,
-                textCapitalization: TextCapitalization.words,
-                paddingBottom: 16.0,
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Campo obrigatório'
-                    : null,
-              ),
-
-              CampoTextoCustomizado(
-                controller: _dataController,
-                hintText: 'Data da prova',
-                icone: Icons.calendar_month,
-                readOnly: true,
-                onTap: () => _selecionarData(context),
-                paddingBottom: 16.0,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Campo obrigatório' : null,
-              ),
-
-              CampoTextoCustomizado(
-                controller: _cargoController,
-                hintText: 'Cargo do concurso',
-                icone: Icons.work_outline,
-                textCapitalization: TextCapitalization.sentences,
-                paddingBottom: 16.0,
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Campo obrigatório'
-                    : null,
-              ),
-
-              GestureDetector(
-                onTap: _abrirSelecaoDeMaterias,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
-                  margin: const EdgeInsets.only(bottom: 24.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF101820),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: _materiasSelecionadas.isNotEmpty
-                          ? AppCores.amareloBizzu
-                          : Colors.white12,
-                      width: _materiasSelecionadas.isNotEmpty ? 2 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.menu_book, color: Color(0xFF415A77)),
-                          const SizedBox(width: 12),
-                          Text(
-                            _materiasSelecionadas.isEmpty
-                                ? 'Selecione as matérias'
-                                : 'Matérias do concurso',
-                            style: TextStyle(
-                              color: _materiasSelecionadas.isEmpty
-                                  ? Colors.grey
-                                  : AppCores.amareloBizzu,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_materiasSelecionadas.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _materiasSelecionadas.map((materia) {
-                            return Chip(
-                              label: Text(
-                                materia,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              backgroundColor: AppCores.amareloBizzu,
-                              deleteIconColor: Colors.black,
-                              onDeleted: () {
-                                setState(() {
-                                  _materiasSelecionadas.remove(materia);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-
-              OutlinedButton.icon(
-                onPressed: _abrirMenuDeImportacao,
-                icon: const Icon(
-                  Icons.file_upload_outlined,
-                  color: AppCores.amareloBizzu,
-                ),
-                label: const Text(
-                  'Importar Edital',
-                  style: TextStyle(
-                    color: AppCores.amareloBizzu,
-                    fontSize: 16,
+        body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  isEditando ? 'Editar concurso' : 'Novo concurso',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(
-                    color: AppCores.amareloBizzu,
-                    width: 1.5,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 32),
+
+                CampoTextoCustomizado(
+                  controller: _nomeController,
+                  hintText: 'Nome do concurso',
+                  icone: Icons.account_balance,
+                  textCapitalization: TextCapitalization.words,
+                  paddingBottom: 16.0,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+
+                CampoTextoCustomizado(
+                  controller: _dataController,
+                  hintText: 'Data da prova',
+                  icone: Icons.calendar_month,
+                  readOnly: true,
+                  onTap: () => _selecionarData(context),
+                  paddingBottom: 16.0,
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+
+                CampoTextoCustomizado(
+                  controller: _cargoController,
+                  hintText: 'Cargo do concurso',
+                  icone: Icons.work_outline,
+                  textCapitalization: TextCapitalization.sentences,
+                  paddingBottom: 16.0,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Campo obrigatório'
+                      : null,
+                ),
+
+                GestureDetector(
+                  onTap: _abrirSelecaoDeMaterias,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 16,
+                    ),
+                    margin: const EdgeInsets.only(bottom: 24.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF101820),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _materiasSelecionadas.isNotEmpty
+                            ? AppCores.amareloBizzu
+                            : Colors.white12,
+                        width: _materiasSelecionadas.isNotEmpty ? 2 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.menu_book,
+                              color: Color(0xFF415A77),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              _materiasSelecionadas.isEmpty
+                                  ? 'Selecione as matérias'
+                                  : 'Matérias do concurso',
+                              style: TextStyle(
+                                color: _materiasSelecionadas.isEmpty
+                                    ? Colors.grey
+                                    : AppCores.amareloBizzu,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_materiasSelecionadas.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _materiasSelecionadas.map((materia) {
+                              return Chip(
+                                label: Text(
+                                  materia,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                backgroundColor: AppCores.amareloBizzu,
+                                deleteIconColor: Colors.black,
+                                onDeleted: () {
+                                  setState(() {
+                                    _materiasSelecionadas.remove(materia);
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
-
-              _estaCarregando
-                  ? const Center(
-                      child: CircularProgressIndicator.adaptive(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppCores.amareloBizzu,
-                        ),
-                      ),
-                    )
-                  : BotaoCustomizado(
-                      texto: isEditando ? 'Salvar Alterações' : 'Cadastrar',
-                      onPressed: _salvarDados,
+                OutlinedButton.icon(
+                  onPressed: _abrirMenuDeImportacao,
+                  icon: const Icon(
+                    Icons.file_upload_outlined,
+                    color: AppCores.amareloBizzu,
+                  ),
+                  label: const Text(
+                    'Importar Edital',
+                    style: TextStyle(
+                      color: AppCores.amareloBizzu,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-            ],
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: const BorderSide(
+                      color: AppCores.amareloBizzu,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                _estaCarregando
+                    ? const Center(
+                        child: CircularProgressIndicator.adaptive(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppCores.amareloBizzu,
+                          ),
+                        ),
+                      )
+                    : BotaoCustomizado(
+                        texto: isEditando ? 'Salvar Alterações' : 'Cadastrar',
+                        onPressed: _salvarDados,
+                      ),
+              ],
+            ),
           ),
         ),
       ),

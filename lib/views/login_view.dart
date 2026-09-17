@@ -90,7 +90,7 @@ class _LoginViewState extends State<LoginView> {
 
   Widget _buildLoadingOverlay() {
     return Container(
-      color: Colors.black,
+      color: Colors.black.withOpacity(0.6),
       child: const Center(
         child: CircularProgressIndicator.adaptive(
           valueColor: AlwaysStoppedAnimation<Color>(AppCores.amareloBizzu),
@@ -109,120 +109,124 @@ class _LoginViewState extends State<LoginView> {
       ),
       body: Stack(
         children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 8.0,
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                    child: Form(
-                      key: _controller.formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildLogo(),
-                          const SizedBox(height: 35),
-                          const Text(
-                            'Acesse sua conta',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          CampoTextoCustomizado(
-                            controller: _controller.emailController,
-                            hintText: 'E-mail',
-                            icone: Icons.email,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Por favor, informe seu e-mail.';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          CampoTextoCustomizado(
-                            controller: _controller.senhaController,
-                            hintText: 'Senha',
-                            icone: Icons.lock,
-                            isSenha: _ocultarSenha,
-                            paddingBottom: 8,
-
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _ocultarSenha
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.grey,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0,
+                        vertical: 8.0,
+                      ),
+                      child: Form(
+                        key: _controller.formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildLogo(),
+                            const SizedBox(height: 35),
+                            const Text(
+                              'Acesse sua conta',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
                               ),
+                            ),
+                            const SizedBox(height: 32),
+
+                            CampoTextoCustomizado(
+                              controller: _controller.emailController,
+                              hintText: 'E-mail',
+                              icone: Icons.email,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Por favor, informe seu e-mail.';
+                                }
+                                return null;
+                              },
+                            ),
+
+                            CampoTextoCustomizado(
+                              controller: _controller.senhaController,
+                              hintText: 'Senha',
+                              icone: Icons.lock,
+                              isSenha: _ocultarSenha,
+                              paddingBottom: 8,
+
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _ocultarSenha
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _ocultarSenha = !_ocultarSenha;
+                                  });
+                                },
+                              ),
+
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Por favor, informe sua senha.';
+                                }
+                                return null;
+                              },
+                            ),
+
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const EsqueciSenhaView(),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.all(5),
+                                ),
+                                child: const Text(
+                                  'Esqueceu a senha?',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            BotaoCustomizado(
+                              texto: 'Entrar',
                               onPressed: () {
-                                setState(() {
-                                  _ocultarSenha =
-                                      !_ocultarSenha; 
+                                _executarComLoading(() async {
+                                  await _controller.entrarComEmail(context);
                                 });
                               },
                             ),
 
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Por favor, informe sua senha.';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const EsqueciSenhaView(),
-                                  ),
-                                );
-                              },
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.all(5),
-                              ),
-                              child: const Text(
-                                'Esqueceu a senha?',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          BotaoCustomizado(
-                            texto: 'Entrar',
-                            onPressed: () {
-                              _executarComLoading(() async {
-                                await _controller.entrarComEmail(context);
-                              });
-                            },
-                          ),
-
-                          const SizedBox(height: 40),
-                          _buildDivisorSociais(),
-                          const SizedBox(height: 24),
-                          _buildBotoesSociais(context),
-                        ],
+                            const SizedBox(height: 40),
+                            _buildDivisorSociais(),
+                            const SizedBox(height: 24),
+                            _buildBotoesSociais(context),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
+
           if (_isLoading) _buildLoadingOverlay(),
         ],
       ),

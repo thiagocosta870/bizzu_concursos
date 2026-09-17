@@ -3,7 +3,7 @@ import 'package:bizzu_concursos/theme/appCores.dart';
 import 'package:bizzu_concursos/controllers/timer_estudo_controller.dart';
 
 class TimerEstudoView extends StatefulWidget {
-  final String concursoId; 
+  final String concursoId;
   final String materia;
   final String assunto;
   final String? revisaoId;
@@ -207,103 +207,105 @@ class _TimerEstudoViewState extends State<TimerEstudoView>
               ),
               centerTitle: true,
             ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF101820),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white12),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          widget.materia,
-                          style: const TextStyle(
-                            color: AppCores.amareloBizzu,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+            body: SafeArea(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF101820),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white12),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            widget.materia,
+                            style: const TextStyle(
+                              color: AppCores.amareloBizzu,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.assunto,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 64),
+                    Container(
+                      width: 250,
+                      height: 250,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppCores.amareloBizzu,
+                          width: 3,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.assunto,
+                      ),
+                      child: Center(
+                        child: Text(
+                          _controller.formatarTempo(),
                           style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
+                            color: Colors.white,
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            fontFeatures: [FontFeature.tabularFigures()],
                           ),
-                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 64),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (!_controller.estaRodando &&
+                            _controller.obterTempoTotal().inSeconds > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 24),
+                            child: FloatingActionButton(
+                              heroTag: 'btn_stop',
+                              onPressed: _finalizarEstudo,
+                              backgroundColor: Colors.redAccent,
+                              child: const Icon(
+                                Icons.stop,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            ),
+                          ),
+                        FloatingActionButton(
+                          heroTag: 'btn_play_pause',
+                          onPressed: _controller.estaRodando
+                              ? _controller.pausarTimer
+                              : _controller.iniciarTimer,
+                          backgroundColor: AppCores.amareloBizzu,
+                          child: Icon(
+                            _controller.estaRodando
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            color: Colors.black,
+                            size: 32,
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 64),
-                  Container(
-                    width: 250,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppCores.amareloBizzu,
-                        width: 3,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _controller.formatarTempo(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 64),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (!_controller.estaRodando &&
-                          _controller.obterTempoTotal().inSeconds > 0)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 24),
-                          child: FloatingActionButton(
-                            heroTag: 'btn_stop',
-                            onPressed: _finalizarEstudo,
-                            backgroundColor: Colors.redAccent,
-                            child: const Icon(
-                              Icons.stop,
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                          ),
-                        ),
-                      FloatingActionButton(
-                        heroTag: 'btn_play_pause',
-                        onPressed: _controller.estaRodando
-                            ? _controller.pausarTimer
-                            : _controller.iniciarTimer,
-                        backgroundColor: AppCores.amareloBizzu,
-                        child: Icon(
-                          _controller.estaRodando
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                          color: Colors.black,
-                          size: 32,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

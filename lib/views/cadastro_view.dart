@@ -51,236 +51,252 @@ class _CadastroViewState extends State<CadastroView> {
       ),
       body: Stack(
         children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 8.0,
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                    child: Form(
-                      key: _controller.formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Center(
-                            child: Container(
-                              width: 180,
-                              height: 180,
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF02080C),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color.fromARGB(
-                                    255,
-                                    251,
-                                    239,
-                                    12,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0,
+                        vertical: 8.0,
+                      ),
+                      child: Form(
+                        key: _controller.formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Center(
+                              child: Container(
+                                width: 180,
+                                height: 180,
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF02080C),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color.fromARGB(
+                                      255,
+                                      251,
+                                      239,
+                                      12,
+                                    ),
+                                    width: 1.5,
                                   ),
-                                  width: 1.5,
+                                ),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/images/logo.png',
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'assets/images/logo.png',
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
                             ),
-                          ),
-                          const SizedBox(height: espacoGrande),
-                          const Text(
-                            'Crie sua conta',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                          const SizedBox(height: espacoMedio),
-                          TextFormField(
-                            controller: _controller.nomeController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'Nome Completo',
-                              labelStyle: const TextStyle(color: Colors.grey),
-                              prefixIcon: const Icon(
-                                Icons.person,
-                                color: Colors.grey,
-                              ),
-                              enabledBorder: _criarBorda(cor: Colors.grey),
-                              focusedBorder: _criarBorda(
-                                cor: const Color(0xFF415A77),
-                              ),
-                              errorBorder: _criarBorda(cor: Colors.red),
-                              focusedErrorBorder: _criarBorda(cor: Colors.red),
-                            ),
-                            validator: ValidadorNome().validar,
-                          ),
-                          const SizedBox(height: espacoPequeno),
-                          TextFormField(
-                            controller: _controller.emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'E-mail',
-                              labelStyle: const TextStyle(color: Colors.grey),
-                              prefixIcon: const Icon(
-                                Icons.email,
-                                color: Colors.grey,
-                              ),
-                              enabledBorder: _criarBorda(cor: Colors.grey),
-                              focusedBorder: _criarBorda(
-                                cor: const Color(0xFF415A77),
-                              ),
-                              errorBorder: _criarBorda(cor: Colors.red),
-                              focusedErrorBorder: _criarBorda(cor: Colors.red),
-                            ),
-                            validator: ValidadorEmail().validar,
-                          ),
-                          const SizedBox(height: espacoPequeno),
-                          TextFormField(
-                            controller: _controller.senhaController,
-                            obscureText: _ocultarSenha,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: 'Senha',
-                              labelStyle: const TextStyle(color: Colors.grey),
-                              prefixIcon: const Icon(
-                                Icons.lock,
-                                color: Colors.grey,
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _ocultarSenha = !_ocultarSenha;
-                                  });
-                                },
-                                icon: Icon(
-                                  _ocultarSenha
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              enabledBorder: _criarBorda(cor: Colors.grey),
-                              focusedBorder: _criarBorda(
-                                cor: const Color(0xFF415A77),
-                              ),
-                              errorBorder: _criarBorda(cor: Colors.red),
-                              focusedErrorBorder: _criarBorda(cor: Colors.red),
-                            ),
-                            validator: ValidadorSenha().validar,
-                          ),
-                          const SizedBox(height: espacoMedio),
-                          ElevatedButton(
-                            onPressed: () {
-                              _executarComLoading(() async {
-                                await _controller.finalizarCadastro(context);
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF415A77),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              'Finalizar Cadastro',
+                            const SizedBox(height: espacoGrande),
+                            const Text(
+                              'Crie sua conta',
                               style: TextStyle(
-                                fontSize: 20,
                                 color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
                               ),
+                              textAlign: TextAlign.left,
                             ),
-                          ),
-                          const SizedBox(height: espacoGrande),
-                          Row(
-                            children: [
-                              const Expanded(
-                                child: Divider(
+                            const SizedBox(height: espacoMedio),
+                            TextFormField(
+                              controller: _controller.nomeController,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Nome Completo',
+                                labelStyle: const TextStyle(color: Colors.grey),
+                                prefixIcon: const Icon(
+                                  Icons.person,
                                   color: Colors.grey,
-                                  thickness: 0.5,
+                                ),
+                                enabledBorder: _criarBorda(cor: Colors.grey),
+                                focusedBorder: _criarBorda(
+                                  cor: const Color(0xFF415A77),
+                                ),
+                                errorBorder: _criarBorda(cor: Colors.red),
+                                focusedErrorBorder: _criarBorda(
+                                  cor: Colors.red,
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
+                              validator: ValidadorNome().validar,
+                            ),
+                            const SizedBox(height: espacoPequeno),
+                            TextFormField(
+                              controller: _controller.emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'E-mail',
+                                labelStyle: const TextStyle(color: Colors.grey),
+                                prefixIcon: const Icon(
+                                  Icons.email,
+                                  color: Colors.grey,
                                 ),
-                                child: Text(
-                                  'ou cadastre-se com',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 14,
+                                enabledBorder: _criarBorda(cor: Colors.grey),
+                                focusedBorder: _criarBorda(
+                                  cor: const Color(0xFF415A77),
+                                ),
+                                errorBorder: _criarBorda(cor: Colors.red),
+                                focusedErrorBorder: _criarBorda(
+                                  cor: Colors.red,
+                                ),
+                              ),
+                              validator: ValidadorEmail().validar,
+                            ),
+                            const SizedBox(height: espacoPequeno),
+                            TextFormField(
+                              controller: _controller.senhaController,
+                              obscureText: _ocultarSenha,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Senha',
+                                labelStyle: const TextStyle(color: Colors.grey),
+                                prefixIcon: const Icon(
+                                  Icons.lock,
+                                  color: Colors.grey,
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _ocultarSenha = !_ocultarSenha;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    _ocultarSenha
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.grey,
                                   ),
                                 ),
-                              ),
-                              const Expanded(
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.5,
+                                enabledBorder: _criarBorda(cor: Colors.grey),
+                                focusedBorder: _criarBorda(
+                                  cor: const Color(0xFF415A77),
+                                ),
+                                errorBorder: _criarBorda(cor: Colors.red),
+                                focusedErrorBorder: _criarBorda(
+                                  cor: Colors.red,
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: espacoMedio),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  _executarComLoading(() async {
-                                    await _controller.autenticarComRedeSocial(
-                                      context,
-                                      AuthGoogleStrategy(),
-                                    );
-                                  });
-                                },
-                                icon: const Icon(Icons.g_mobiledata, size: 40),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.red,
-                                  padding: const EdgeInsets.all(12),
-                                  minimumSize: const Size(60, 40),
+                              validator: ValidadorSenha().validar,
+                            ),
+                            const SizedBox(height: espacoMedio),
+                            ElevatedButton(
+                              onPressed: () {
+                                _executarComLoading(() async {
+                                  await _controller.finalizarCadastro(context);
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF415A77),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              const SizedBox(width: espacoGrande),
-                              IconButton(
-                                onPressed: () {
-                                  _executarComLoading(() async {
-                                    await _controller.autenticarComRedeSocial(
-                                      context,
-                                      AuthFacebookStrategy(),
-                                    );
-                                  });
-                                },
-                                icon: const Icon(Icons.facebook, size: 40),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.blue.shade800,
-                                  padding: const EdgeInsets.all(12),
-                                  minimumSize: const Size(60, 40),
+                              child: const Text(
+                                'Finalizar Cadastro',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            const SizedBox(height: espacoGrande),
+                            Row(
+                              children: [
+                                const Expanded(
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    thickness: 0.5,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Text(
+                                    'ou cadastre-se com',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade400,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                const Expanded(
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    thickness: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: espacoMedio),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    _executarComLoading(() async {
+                                      await _controller.autenticarComRedeSocial(
+                                        context,
+                                        AuthGoogleStrategy(),
+                                      );
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.g_mobiledata,
+                                    size: 40,
+                                  ),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: Colors.red,
+                                    padding: const EdgeInsets.all(12),
+                                    minimumSize: const Size(60, 40),
+                                  ),
+                                ),
+                                const SizedBox(width: espacoGrande),
+                                IconButton(
+                                  onPressed: () {
+                                    _executarComLoading(() async {
+                                      await _controller.autenticarComRedeSocial(
+                                        context,
+                                        AuthFacebookStrategy(),
+                                      );
+                                    });
+                                  },
+                                  icon: const Icon(Icons.facebook, size: 40),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: Colors.blue.shade800,
+                                    padding: const EdgeInsets.all(12),
+                                    minimumSize: const Size(60, 40),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
+
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black,
               child: const Center(
                 child: CircularProgressIndicator.adaptive(
                   valueColor: AlwaysStoppedAnimation<Color>(
