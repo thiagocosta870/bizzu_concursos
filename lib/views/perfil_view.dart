@@ -35,11 +35,7 @@ class _PerfilViewState extends State<PerfilView> {
       child: ListTile(
         leading: Icon(icon, color: corIcone),
         title: Text(title, style: TextStyle(color: corBase, fontSize: 16)),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          color: corBase.withOpacity(0.38),
-          size: 16,
-        ),
+        trailing: Icon(Icons.arrow_forward_ios, color: corBase, size: 16),
         onTap: onTap,
       ),
     );
@@ -375,7 +371,7 @@ class _PerfilViewState extends State<PerfilView> {
               children: [
                 CircleAvatar(
                   radius: 55,
-                  backgroundColor: AppCores.amareloBizzu.withOpacity(0.2),
+                  backgroundColor: AppCores.amareloBizzu,
                   child: CircleAvatar(
                     radius: 50,
                     backgroundColor: AppCores.amareloBizzu,
