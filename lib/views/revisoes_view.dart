@@ -134,178 +134,180 @@ class _RevisoesViewState extends State<RevisoesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Minhas Revisões',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton.icon(
-                icon: const Icon(
-                  Icons.calendar_month,
-                  color: AppCores.amareloBizzu,
-                ),
-                label: Text(
-                  _formatarDataVisual(_dataSelecionada),
-                  style: const TextStyle(
-                    color: AppCores.amareloBizzu,
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Minhas Revisões',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
-                onPressed: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _dataSelecionada,
-                    firstDate: DateTime(2023),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                    builder: (context, child) {
-                      return Theme(
-                        data: ThemeData.dark().copyWith(
-                          colorScheme: const ColorScheme.dark(
-                            primary: AppCores.amareloBizzu,
-                            onPrimary: Colors.black,
-                            surface: Color(0xFF101820),
-                            onSurface: Colors.white,
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
-                  );
-                  if (picked != null) {
-                    setState(() => _dataSelecionada = picked);
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: _controller.streamRevisoesPorData(_dataSelecionada),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Center(
-                  child: Text(
-                    'Erro ao carregar',
-                    style: TextStyle(color: Colors.red),
+                TextButton.icon(
+                  icon: const Icon(
+                    Icons.calendar_month,
+                    color: AppCores.amareloBizzu,
                   ),
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppCores.amareloBizzu,
+                  label: Text(
+                    _formatarDataVisual(_dataSelecionada),
+                    style: const TextStyle(
+                      color: AppCores.amareloBizzu,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                );
-              }
-
-              final docs = snapshot.data?.docs ?? [];
-
-              if (docs.isEmpty) {
-                return _buildEmptyState();
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.all(20),
-                itemCount: docs.length,
-                itemBuilder: (context, index) {
-                  final data = docs[index].data() as Map<String, dynamic>;
-                  final id = docs[index].id;
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: Material(
-                      color: const Color(0xFF101820),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: const BorderSide(color: AppCores.amareloBizzu),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        title: Text(
-                          data['materia'],
-                          style: const TextStyle(
-                            color: AppCores.amareloBizzu,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _dataSelecionada,
+                      firstDate: DateTime(2023),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      builder: (context, child) {
+                        return Theme(
+                          data: ThemeData.dark().copyWith(
+                            colorScheme: const ColorScheme.dark(
+                              primary: AppCores.amareloBizzu,
+                              onPrimary: Colors.black,
+                              surface: Color(0xFF101820),
+                              onSurface: Colors.white,
+                            ),
                           ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (picked != null) {
+                      setState(() => _dataSelecionada = picked);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _controller.streamRevisoesPorData(_dataSelecionada),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'Erro ao carregar',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppCores.amareloBizzu,
+                      ),
+                    ),
+                  );
+                }
+
+                final docs = snapshot.data?.docs ?? [];
+
+                if (docs.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    final id = docs[index].id;
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: Material(
+                        color: const Color(0xFF101820),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(color: AppCores.amareloBizzu),
                         ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            data['assunto'],
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          title: Text(
+                            data['materia'],
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
+                              color: AppCores.amareloBizzu,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.play_circle_outline,
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              data['assunto'],
+                              style: const TextStyle(
                                 color: Colors.white,
-                                size: 28,
+                                fontSize: 16,
                               ),
-                              tooltip: 'Revisar Agora',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TimerEstudoView(
-                                      concursoId: data['concursoId'] ?? '',
-                                      materia: data['materia'],
-                                      assunto: data['assunto'],
-                                      revisaoId: id,
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.play_circle_outline,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                                tooltip: 'Revisar Agora',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TimerEstudoView(
+                                        concursoId: data['concursoId'] ?? '',
+                                        materia: data['materia'],
+                                        assunto: data['assunto'],
+                                        revisaoId: id,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.check_circle_outline,
-                                color: AppCores.amareloBizzu,
-                                size: 28,
+                                  );
+                                },
                               ),
-                              tooltip: 'Marcar como Feito',
-                              onPressed: () => _confirmarConclusao(
-                                id,
-                                data['materia'],
-                                data['assunto'],
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.check_circle_outline,
+                                  color: AppCores.amareloBizzu,
+                                  size: 28,
+                                ),
+                                tooltip: 'Marcar como Feito',
+                                onPressed: () => _confirmarConclusao(
+                                  id,
+                                  data['materia'],
+                                  data['assunto'],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -146,160 +146,162 @@ class _AssuntosMateriaViewState extends State<AssuntosMateriaView> {
           ),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _controller.streamAssuntos(
-          widget.concurso.id ?? '',
-          widget.nomeMateria,
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                'Erro ao carregar assuntos.',
-                style: TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppCores.amareloBizzu),
-            );
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.library_books,
-                    size: 64,
-                    color: Colors.white24,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Nenhum assunto cadastrado',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _exibirDialogoNovoAssunto,
-                    icon: const Icon(Icons.add, color: Colors.black),
-                    label: const Text(
-                      'Adicionar Assunto',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppCores.amareloBizzu,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final assuntos = snapshot.data!.docs;
-          assuntos.sort((a, b) {
-            final dataA = (a.data() as Map<String, dynamic>)['criadoEm'] ?? 0;
-            final dataB = (b.data() as Map<String, dynamic>)['criadoEm'] ?? 0;
-            return dataA.compareTo(dataB);
-          });
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: assuntos.length,
-            itemBuilder: (context, index) {
-              final doc = assuntos[index];
-              final data = doc.data() as Map<String, dynamic>;
-              final isConcluido = data['concluido'] ?? false;
-              final nomeAssunto = data['nome'];
-              final assuntoId = doc.id;
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF101820),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isConcluido
-                        ? AppCores.amareloBizzu.withOpacity(0.3)
-                        : Colors.white12,
-                  ),
-                ),
-                child: ListTile(
-                  title: Text(
-                    nomeAssunto,
-                    style: TextStyle(
-                      color: isConcluido ? Colors.grey : Colors.white,
-                      decoration: isConcluido
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.play_circle_outline,
-                          color: AppCores.amareloBizzu,
-                          size: 24,
-                        ),
-                        tooltip: 'Estudar',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TimerEstudoView(
-                                concursoId: widget.concurso.id ?? '',
-                                materia: widget.nomeMateria,
-                                assunto: nomeAssunto,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.redAccent,
-                          size: 20,
-                        ),
-                        tooltip: 'Excluir',
-                        onPressed: () =>
-                            _confirmarExclusaoAssunto(assuntoId, nomeAssunto),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          isConcluido
-                              ? Icons.check_circle
-                              : Icons.radio_button_unchecked,
-                          color: isConcluido
-                              ? AppCores.amareloBizzu
-                              : Colors.white24,
-                        ),
-                        tooltip: isConcluido ? 'Desmarcar' : 'Concluir',
-                        onPressed: () {
-                          if (widget.concurso.id != null) {
-                            _controller.alternarStatusConcluido(
-                              widget.concurso.id!,
-                              assuntoId,
-                              isConcluido,
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+      body: SafeArea(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _controller.streamAssuntos(
+            widget.concurso.id ?? '',
+            widget.nomeMateria,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text(
+                  'Erro ao carregar assuntos.',
+                  style: TextStyle(color: Colors.red),
                 ),
               );
-            },
-          );
-        },
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppCores.amareloBizzu),
+              );
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.library_books,
+                      size: 64,
+                      color: Colors.white24,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Nenhum assunto cadastrado',
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: _exibirDialogoNovoAssunto,
+                      icon: const Icon(Icons.add, color: Colors.black),
+                      label: const Text(
+                        'Adicionar Assunto',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppCores.amareloBizzu,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final assuntos = snapshot.data!.docs;
+            assuntos.sort((a, b) {
+              final dataA = (a.data() as Map<String, dynamic>)['criadoEm'] ?? 0;
+              final dataB = (b.data() as Map<String, dynamic>)['criadoEm'] ?? 0;
+              return dataA.compareTo(dataB);
+            });
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: assuntos.length,
+              itemBuilder: (context, index) {
+                final doc = assuntos[index];
+                final data = doc.data() as Map<String, dynamic>;
+                final isConcluido = data['concluido'] ?? false;
+                final nomeAssunto = data['nome'];
+                final assuntoId = doc.id;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101820),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isConcluido
+                          ? AppCores.amareloBizzu.withOpacity(0.3)
+                          : Colors.white12,
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      nomeAssunto,
+                      style: TextStyle(
+                        color: isConcluido ? Colors.grey : Colors.white,
+                        decoration: isConcluido
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.play_circle_outline,
+                            color: AppCores.amareloBizzu,
+                            size: 24,
+                          ),
+                          tooltip: 'Estudar',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TimerEstudoView(
+                                  concursoId: widget.concurso.id ?? '',
+                                  materia: widget.nomeMateria,
+                                  assunto: nomeAssunto,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.redAccent,
+                            size: 20,
+                          ),
+                          tooltip: 'Excluir',
+                          onPressed: () =>
+                              _confirmarExclusaoAssunto(assuntoId, nomeAssunto),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            isConcluido
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: isConcluido
+                                ? AppCores.amareloBizzu
+                                : Colors.white24,
+                          ),
+                          tooltip: isConcluido ? 'Desmarcar' : 'Concluir',
+                          onPressed: () {
+                            if (widget.concurso.id != null) {
+                              _controller.alternarStatusConcluido(
+                                widget.concurso.id!,
+                                assuntoId,
+                                isConcluido,
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _exibirDialogoNovoAssunto,

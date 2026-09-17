@@ -99,136 +99,139 @@ class _HomeViewState extends State<HomeView> {
 
     final concursos = _homeController.meusConcursos;
 
-    return ListView(
-      padding: const EdgeInsets.all(20.0),
-      children: [
-        Text(
-          'Olá, $nomeExibicao!',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color(0xFF415A77),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFF415A77), width: 1.5),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Total de concursos cadastrados',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${concursos.length}',
-                style: const TextStyle(
-                  color: AppCores.amareloBizzu,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 32),
-
-        const Text(
-          'Meus Concursos',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        if (_carregando)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator.adaptive(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppCores.amareloBizzu,
-                ),
-              ),
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(20.0),
+        children: [
+          Text(
+            'Olá, $nomeExibicao!',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
             ),
-          )
-        else if (concursos.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(top: 40.0),
+          ),
+          const SizedBox(height: 24),
+
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF415A77),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFF415A77), width: 1.5),
+            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.assignment_add, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text(
-                  'Você ainda não possui concursos.',
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Clique em "Cadastrar concurso" para começar!',
+                const Text(
+                  'Total de concursos cadastrados',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
-                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${concursos.length}',
+                  style: const TextStyle(
+                    color: AppCores.amareloBizzu,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
-          )
-        else
-          ...concursos
-              .map(
-                (concurso) => CardConcurso(
-                  nome: concurso.nome,
-                  data: concurso.dataProva,
-                  cargo: concurso.cargo,
-                  onEditar: () async {
-                    final atualizou = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            CadastrarConcursoView(concursoParaEditar: concurso),
-                      ),
-                    );
-                    if (atualizou == true) _carregarConcursos();
-                  },
-                  onExcluir: () async {
-                    final confirmar = await _exibirDialogoConfirmacao(
-                      titulo: 'Excluir Concurso?',
-                      subtitulo: 'Esta ação não pode ser desfeita.',
-                      textoBotaoConfirmar: 'Excluir',
-                    );
+          ),
+          const SizedBox(height: 32),
 
-                    if (confirmar == true && usuario != null) {
-                      setState(() => _carregando = true);
-                      await _homeController.excluirConcurso(
-                        usuario!.uid,
-                        concurso.id!,
-                      );
-                      _carregarConcursos();
-                    }
-                  },
-                  onAbrir: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetalhesConcursoView(concurso: concurso),
-                      ),
-                    );
-                  },
+          const Text(
+            'Meus Concursos',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          if (_carregando)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: CircularProgressIndicator.adaptive(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppCores.amareloBizzu,
+                  ),
                 ),
-              )
-              .toList(),
+              ),
+            )
+          else if (concursos.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(top: 40.0),
+              child: Column(
+                children: [
+                  Icon(Icons.assignment_add, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text(
+                    'Você ainda não possui concursos.',
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Clique em "Cadastrar concurso" para começar!',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          else
+            ...concursos
+                .map(
+                  (concurso) => CardConcurso(
+                    nome: concurso.nome,
+                    data: concurso.dataProva,
+                    cargo: concurso.cargo,
+                    onEditar: () async {
+                      final atualizou = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CadastrarConcursoView(
+                            concursoParaEditar: concurso,
+                          ),
+                        ),
+                      );
+                      if (atualizou == true) _carregarConcursos();
+                    },
+                    onExcluir: () async {
+                      final confirmar = await _exibirDialogoConfirmacao(
+                        titulo: 'Excluir Concurso?',
+                        subtitulo: 'Esta ação não pode ser desfeita.',
+                        textoBotaoConfirmar: 'Excluir',
+                      );
 
-        const SizedBox(height: 80),
-      ],
+                      if (confirmar == true && usuario != null) {
+                        setState(() => _carregando = true);
+                        await _homeController.excluirConcurso(
+                          usuario!.uid,
+                          concurso.id!,
+                        );
+                        _carregarConcursos();
+                      }
+                    },
+                    onAbrir: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetalhesConcursoView(concurso: concurso),
+                        ),
+                      );
+                    },
+                  ),
+                )
+                .toList(),
+
+          const SizedBox(height: 80),
+        ],
+      ),
     );
   }
 

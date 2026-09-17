@@ -50,71 +50,73 @@ class _EsqueciSenhaViewState extends State<EsqueciSenhaView> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 8.0,
-                ),
-                child: Form(
-                  key: _controller.formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildLogo(),
-                      const SizedBox(height: 35),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8.0,
+                  ),
+                  child: Form(
+                    key: _controller.formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildLogo(),
+                        const SizedBox(height: 35),
 
-                      Text(
-                        widget.tituloPersonalizado ?? 'Esqueceu sua senha?',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          widget.tituloPersonalizado ?? 'Esqueceu sua senha?',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      const Text(
-                        'Digite seu e-mail cadastrado abaixo para receber um link de redefinição de senha.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.white70),
-                      ),
-                      const SizedBox(height: 35),
+                        const Text(
+                          'Digite seu e-mail cadastrado abaixo para receber um link de redefinição de senha.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.white70),
+                        ),
+                        const SizedBox(height: 35),
 
-                      CampoTextoCustomizado(
-                        controller: _controller.emailController,
-                        hintText: 'E-mail',
-                        icone: Icons.email,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, informe seu e-mail.';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Insira um e-mail válido.';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 32),
+                        CampoTextoCustomizado(
+                          controller: _controller.emailController,
+                          hintText: 'E-mail',
+                          icone: Icons.email,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Por favor, informe seu e-mail.';
+                            }
+                            if (!value.contains('@')) {
+                              return 'Insira um e-mail válido.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 32),
 
-                      BotaoCustomizado(
-                        texto: 'Enviar Link',
-                        onPressed: () =>
-                            _controller.enviarEmailRecuperacao(context),
-                      ),
-                    ],
+                        BotaoCustomizado(
+                          texto: 'Enviar Link',
+                          onPressed: () =>
+                              _controller.enviarEmailRecuperacao(context),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

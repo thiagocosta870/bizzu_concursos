@@ -361,142 +361,144 @@ class _PerfilViewState extends State<PerfilView> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 55,
-                  backgroundColor: AppCores.amareloBizzu,
-                  child: CircleAvatar(
-                    radius: 50,
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 55,
                     backgroundColor: AppCores.amareloBizzu,
-                    child: Text(
-                      _controller.inicialAvatar,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: AppCores.amareloBizzu,
+                      child: Text(
+                        _controller.inicialAvatar,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _controller.nomeExibicao,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(height: 16),
+                  Text(
+                    _controller.nomeExibicao,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _controller.email,
-                  style: const TextStyle(color: Colors.white54, fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 40),
-
-          const Text(
-            'Gerenciamento da Conta',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildMenuItem(
-            icon: Icons.person_outline,
-            title: 'Editar Dados',
-            onTap: _exibirDialogoEditarDados,
-          ),
-          _buildMenuItem(
-            icon: Icons.lock_outline,
-            title: 'Alterar Senha',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const EsqueciSenhaView(
-                    tituloPersonalizado: 'Redefinir Senha',
+                  const SizedBox(height: 4),
+                  Text(
+                    _controller.email,
+                    style: const TextStyle(color: Colors.white54, fontSize: 16),
                   ),
-                ),
-              );
-            },
-          ),
-          _buildMenuItem(
-            icon: Icons.notifications_none,
-            title: 'Notificações',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificacoesView(),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 32),
-
-          const Text(
-            'Suporte e Sobre',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          _buildMenuItem(
-            icon: Icons.headset_mic_outlined,
-            title: 'Falar com o Suporte',
-            onTap: _exibirDialogoSuporte,
-          ),
-          _buildMenuItem(
-            icon: Icons.description_outlined,
-            title: 'Termos de Uso',
-            onTap: () => _exibirDialogoTextoLongo(
-              'Termos de Uso',
-              'Bem-vindo ao Bizzu Concursos!\n\n'
-                  '1. O Aplicativo: O Bizzu Concursos é uma ferramenta de gestão de estudos e produtividade, criada para ajudar você a cronometrar seu tempo e organizar a sua evolução nos editais.\n\n'
-                  '2. Uso da Conta: Você é inteiramente responsável por manter a segurança da sua conta e senha. Não compartilhe seu acesso com terceiros.\n\n'
-                  '3. Disponibilidade: O aplicativo depende de conexão com a internet para salvar e sincronizar seus dados em nuvem de forma segura. Trabalhamos constantemente para manter tudo sempre online, mas podem ocorrer instabilidades temporárias ou manutenções.\n\n'
-                  '4. Encerramento: Você é livre para parar de utilizar o aplicativo a qualquer momento e pode solicitar a exclusão de todos os seus dados.',
-            ),
-          ),
-          _buildMenuItem(
-            icon: Icons.privacy_tip_outlined,
-            title: 'Política de Privacidade',
-            onTap: () => _exibirDialogoTextoLongo(
-              'Política de Privacidade',
-              'A sua privacidade é um pilar importante para o Bizzu Concursos.\n\n'
-                  '1. Dados Coletados: Coletamos apenas as informações estritamente necessárias para o funcionamento do aplicativo: seu nome, e-mail e os dados da sua rotina de estudos (concursos, matérias, assuntos concluídos e tempo cronometrado).\n\n'
-                  '2. Como Usamos: Seus dados são usados exclusivamente para gerar os seus gráficos de desempenho e organizar o seu progresso pessoal. Não vendemos, alugamos ou compartilhamos suas informações com terceiros.\n\n'
-                  '3. Armazenamento Seguro: Seus dados são armazenados de forma criptografada e segura utilizando os servidores em nuvem do Firebase (tecnologia do Google).\n\n'
-                  '4. Seus Direitos: A qualquer momento, você possui o direito de editar as suas informações de perfil ou excluir permanentemente a sua conta.',
-            ),
-          ),
 
-          const SizedBox(height: 32),
-          _buildMenuItem(
-            icon: Icons.delete_forever,
-            title: 'Apagar Minha Conta',
-            corDestaque: Colors.redAccent,
-            onTap: _iniciarProcessoExclusao,
-          ),
+            const SizedBox(height: 40),
 
-          const SizedBox(height: 80),
-        ],
+            const Text(
+              'Gerenciamento da Conta',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildMenuItem(
+              icon: Icons.person_outline,
+              title: 'Editar Dados',
+              onTap: _exibirDialogoEditarDados,
+            ),
+            _buildMenuItem(
+              icon: Icons.lock_outline,
+              title: 'Alterar Senha',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EsqueciSenhaView(
+                      tituloPersonalizado: 'Redefinir Senha',
+                    ),
+                  ),
+                );
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.notifications_none,
+              title: 'Notificações',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificacoesView(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 32),
+
+            const Text(
+              'Suporte e Sobre',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildMenuItem(
+              icon: Icons.headset_mic_outlined,
+              title: 'Falar com o Suporte',
+              onTap: _exibirDialogoSuporte,
+            ),
+            _buildMenuItem(
+              icon: Icons.description_outlined,
+              title: 'Termos de Uso',
+              onTap: () => _exibirDialogoTextoLongo(
+                'Termos de Uso',
+                'Bem-vindo ao Bizzu Concursos!\n\n'
+                    '1. O Aplicativo: O Bizzu Concursos é uma ferramenta de gestão de estudos e produtividade, criada para ajudar você a cronometrar seu tempo e organizar a sua evolução nos editais.\n\n'
+                    '2. Uso da Conta: Você é inteiramente responsável por manter a segurança da sua conta e senha. Não compartilhe seu acesso com terceiros.\n\n'
+                    '3. Disponibilidade: O aplicativo depende de conexão com a internet para salvar e sincronizar seus dados em nuvem de forma segura. Trabalhamos constantemente para manter tudo sempre online, mas podem ocorrer instabilidades temporárias ou manutenções.\n\n'
+                    '4. Encerramento: Você é livre para parar de utilizar o aplicativo a qualquer momento e pode solicitar a exclusão de todos os seus dados.',
+              ),
+            ),
+            _buildMenuItem(
+              icon: Icons.privacy_tip_outlined,
+              title: 'Política de Privacidade',
+              onTap: () => _exibirDialogoTextoLongo(
+                'Política de Privacidade',
+                'A sua privacidade é um pilar importante para o Bizzu Concursos.\n\n'
+                    '1. Dados Coletados: Coletamos apenas as informações estritamente necessárias para o funcionamento do aplicativo: seu nome, e-mail e os dados da sua rotina de estudos (concursos, matérias, assuntos concluídos e tempo cronometrado).\n\n'
+                    '2. Como Usamos: Seus dados são usados exclusivamente para gerar os seus gráficos de desempenho e organizar o seu progresso pessoal. Não vendemos, alugamos ou compartilhamos suas informações com terceiros.\n\n'
+                    '3. Armazenamento Seguro: Seus dados são armazenados de forma criptografada e segura utilizando os servidores em nuvem do Firebase (tecnologia do Google).\n\n'
+                    '4. Seus Direitos: A qualquer momento, você possui o direito de editar as suas informações de perfil ou excluir permanentemente a sua conta.',
+              ),
+            ),
+
+            const SizedBox(height: 32),
+            _buildMenuItem(
+              icon: Icons.delete_forever,
+              title: 'Apagar Minha Conta',
+              corDestaque: Colors.redAccent,
+              onTap: _iniciarProcessoExclusao,
+            ),
+
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }
