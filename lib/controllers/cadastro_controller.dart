@@ -3,10 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import '../models/usuario_model.dart';
 import '../views/login_view.dart';
+import '../views/home_view.dart';
 import '../models/repositories/cadastro_repository.dart';
 import '../utils/i_alerta_servico.dart';
 import '../utils/alerta_snackbar.dart';
-import '../strategies/auth_strategy.dart'; 
+import '../strategies/auth_strategy.dart';
 
 class CadastroController {
   final formKey = GlobalKey<FormState>();
@@ -65,9 +66,11 @@ class CadastroController {
 
         _mostrarAlertaVisual(
           context,
-          'Cadastro realizado com sucesso!',
+          'Cadastro realizado com sucesso! Faça login para continuar.',
           Colors.green,
         );
+
+        await FirebaseAuth.instance.signOut();
 
         if (!context.mounted) return;
 
@@ -79,7 +82,8 @@ class CadastroController {
         String mensagem = 'Erro ao realizar cadastro: $e';
 
         if (e.code == 'weak-password') {
-          mensagem = 'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
+          mensagem =
+              'A senha fornecida é muito fraca. Use pelo menos 6 caracteres.';
         } else if (e.code == 'email-already-in-use') {
           mensagem = 'Já existe uma conta cadastrada com este e-mail.';
         } else if (e.code == 'invalid-email') {
@@ -115,8 +119,9 @@ class CadastroController {
         userCredential.user?.email ?? '',
       );
 
-      // Usando a variável corretamente como "estrategia"
-      debugPrint('--- SUCESSO COMPLETO COM ${estrategia.nomeProvedor.toUpperCase()}! ---');
+      debugPrint(
+        '--- SUCESSO COMPLETO COM ${estrategia.nomeProvedor.toUpperCase()}! ---',
+      );
       debugPrint('UID: $uid | Nome: ${userCredential.user?.displayName}');
 
       try {
@@ -124,14 +129,25 @@ class CadastroController {
           name: 'login_rede_social',
           parameters: {'metodo': estrategia.nomeProvedor},
         );
-        debugPrint(' ANALYTICS: Login com ${estrategia.nomeProvedor} registrado!');
+        debugPrint(
+          ' ANALYTICS: Login com ${estrategia.nomeProvedor} registrado!',
+        );
       } catch (e) {
         debugPrint(' ANALYTICS ERRO: $e');
       }
 
       if (!context.mounted) return;
-      _mostrarAlertaVisual(context, 'Conta ${estrategia.nomeProvedor} conectada com sucesso!', Colors.green);
-      
+      _mostrarAlertaVisual(
+        context,
+        'Conta ${estrategia.nomeProvedor} conectada com sucesso!',
+        Colors.green,
+      );
+
+      if (!context.mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeView()),
+      );
     } catch (e) {
       debugPrint('Erro ao cadastrar com a rede social: $e');
       if (!context.mounted) return;
