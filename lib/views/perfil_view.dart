@@ -41,23 +41,6 @@ class _PerfilViewState extends State<PerfilView> {
     );
   }
 
-  void _mostrarAvisoEmBreve(String funcionalidade) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Em breve: $funcionalidade!',
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: AppCores.amareloBizzu,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
   void _exibirDialogoEditarDados() {
     final TextEditingController nomeController = TextEditingController(
       text: _controller.nomeExibicao,

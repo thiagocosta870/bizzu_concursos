@@ -28,7 +28,7 @@ class TimerEstudoController extends ChangeNotifier {
 
   void _iniciarDetectorDeTela() {
     try {
-      _screenSubscription = _screen.screenStateStream?.listen((event) {
+      _screenSubscription = _screen.screenStateStream.listen((event) {
         if (event == ScreenStateEvent.screenOff) {
           _ultimaVezQueATelaApagou = DateTime.now();
           _tentarResgatarCronometro();
