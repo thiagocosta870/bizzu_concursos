@@ -32,8 +32,8 @@ class BemVindoView extends StatelessWidget {
 
   Widget _buildLogo() {
     return Container(
-      width: 280,
-      height: 280,
+      width: 250,
+      height: 250,
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: const Color(0xFF02080C),
@@ -71,6 +71,7 @@ class BemVindoView extends StatelessWidget {
   Widget _buildBotoesAcesso(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _criarBotaoAcesso(
           texto: 'Login',
@@ -102,16 +103,36 @@ class BemVindoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF02080C),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildLogo(),
-              _buildTextosInformativos(),
-              _buildBotoesAcesso(context),
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildLogo(),
+                              const SizedBox(height: 40),
+                              _buildTextosInformativos(),
+                            ],
+                          ),
+                        ),
+                        _buildBotoesAcesso(context),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

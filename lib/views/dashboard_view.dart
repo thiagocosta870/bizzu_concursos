@@ -105,17 +105,23 @@ class _DashboardViewState extends State<DashboardView> {
             StreamBuilder<QuerySnapshot>(
               stream: _streamMeusConcursos,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const SizedBox.shrink();
+                // Adicionado chaves aqui também por boa prática
+                if (!snapshot.hasData) {
+                  return const SizedBox.shrink();
+                }
 
                 final concursos = snapshot.data!.docs;
 
                 bool idExiste =
                     _concursoSelecionadoId == 'geral' ||
                     concursos.any((doc) => doc.id == _concursoSelecionadoId);
+
                 if (!idExiste) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted)
+                    // 🛡️ Ajuste feito aqui: adicionamos as chaves para sumir a linha azul!
+                    if (mounted) {
                       setState(() => _concursoSelecionadoId = 'geral');
+                    }
                   });
                 }
 
@@ -128,6 +134,7 @@ class _DashboardViewState extends State<DashboardView> {
                         fontWeight: FontWeight.bold,
                         color: AppCores.amareloBizzu,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ];
@@ -139,6 +146,7 @@ class _DashboardViewState extends State<DashboardView> {
                       value: doc.id,
                       child: Text(
                         data['nome']?.toString() ?? 'Concurso sem nome',
+                        overflow: TextOverflow.ellipsis,
                       ),
                     );
                   }),
@@ -422,9 +430,7 @@ class _DashboardViewState extends State<DashboardView> {
                       decoration: BoxDecoration(
                         color: const Color(0xFF101820),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: AppCores.amareloBizzu.withOpacity(0.3),
-                        ),
+                        border: Border.all(color: AppCores.amareloBizzu),
                       ),
                       child: Column(
                         children: [
