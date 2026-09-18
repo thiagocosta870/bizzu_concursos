@@ -30,10 +30,13 @@ class BemVindoView extends StatelessWidget {
     );
   }
 
-  Widget _buildLogo() {
+  Widget _buildLogo(BuildContext context) {
+    double tamanho = MediaQuery.of(context).size.height * 0.3;
+    if (tamanho > 250) tamanho = 250;
+
     return Container(
-      width: 250,
-      height: 250,
+      width: tamanho,
+      height: tamanho,
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: const Color(0xFF02080C),
@@ -46,23 +49,30 @@ class BemVindoView extends StatelessWidget {
     );
   }
 
-  Widget _buildTextosInformativos() {
-    return const Column(
+  Widget _buildTextosInformativos(BuildContext context) {
+    double alturaTela = MediaQuery.of(context).size.height;
+    double tamanhoTitulo = alturaTela < 700 ? 28 : 35;
+    double tamanhoSubtitulo = alturaTela < 700 ? 16 : 20;
+
+    return Column(
       children: [
         Text(
           'Bem-vindo ao\nBizzu Concursos',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 35,
+            fontSize: tamanhoTitulo,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Text(
           'Estratégia e disciplina na palma da sua mão.',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, color: Color(0xFFE0E1DD)),
+          style: TextStyle(
+            fontSize: tamanhoSubtitulo,
+            color: const Color(0xFFE0E1DD),
+          ),
         ),
       ],
     );
@@ -119,9 +129,12 @@ class BemVindoView extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              _buildLogo(),
-                              const SizedBox(height: 40),
-                              _buildTextosInformativos(),
+                              _buildLogo(context),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
+                              ),
+                              _buildTextosInformativos(context),
                             ],
                           ),
                         ),

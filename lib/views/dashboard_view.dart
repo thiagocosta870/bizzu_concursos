@@ -105,7 +105,6 @@ class _DashboardViewState extends State<DashboardView> {
             StreamBuilder<QuerySnapshot>(
               stream: _streamMeusConcursos,
               builder: (context, snapshot) {
-                // Adicionado chaves aqui também por boa prática
                 if (!snapshot.hasData) {
                   return const SizedBox.shrink();
                 }
@@ -118,7 +117,6 @@ class _DashboardViewState extends State<DashboardView> {
 
                 if (!idExiste) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    // 🛡️ Ajuste feito aqui: adicionamos as chaves para sumir a linha azul!
                     if (mounted) {
                       setState(() => _concursoSelecionadoId = 'geral');
                     }
@@ -128,13 +126,15 @@ class _DashboardViewState extends State<DashboardView> {
                 List<DropdownMenuItem<String>> dropdownItems = [
                   const DropdownMenuItem(
                     value: 'geral',
-                    child: Text(
-                      'Visão Geral (Todos os Concursos)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppCores.amareloBizzu,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 14.0),
+                      child: Text(
+                        'Visão Geral (Todos os Concursos)',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppCores.amareloBizzu,
+                        ),
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ];
@@ -144,9 +144,11 @@ class _DashboardViewState extends State<DashboardView> {
                     final data = doc.data() as Map<String, dynamic>;
                     return DropdownMenuItem<String>(
                       value: doc.id,
-                      child: Text(
-                        data['nome']?.toString() ?? 'Concurso sem nome',
-                        overflow: TextOverflow.ellipsis,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 14.0),
+                        child: Text(
+                          data['nome']?.toString() ?? 'Concurso sem nome',
+                        ),
                       ),
                     );
                   }),
@@ -167,11 +169,12 @@ class _DashboardViewState extends State<DashboardView> {
                       value: idExiste ? _concursoSelecionadoId : 'geral',
                       dropdownColor: const Color(0xFF101820),
                       isExpanded: true,
+                      itemHeight: null,
                       icon: const Icon(
                         Icons.arrow_drop_down,
                         color: AppCores.amareloBizzu,
                       ),
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
                       onChanged: (String? novoValor) {
                         if (novoValor != null) {
                           setState(() {
