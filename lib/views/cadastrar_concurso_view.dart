@@ -20,6 +20,9 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   final _nomeController = TextEditingController();
   final _dataController = TextEditingController();
   final _cargoController = TextEditingController();
+
+  final _novaMateriaController = TextEditingController();
+
   final _controller = CadastroConcursoController();
 
   List<String> _todasAsMaterias = [];
@@ -60,6 +63,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
     _nomeController.dispose();
     _dataController.dispose();
     _cargoController.dispose();
+    _novaMateriaController.dispose();
     super.dispose();
   }
 
@@ -207,22 +211,38 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
   }
 
   void _abrirSelecaoDeMaterias() {
+    _novaMateriaController.clear();
+
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF101820),
+      isScrollControlled: true,
+      useSafeArea: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            return SafeArea(
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.only(
+                  left: 16.0,
+                  right: 16.0,
+                  top: 24.0,
+                  bottom:
+                      MediaQuery.of(context).viewInsets.bottom +
+                      MediaQuery.of(context).padding.bottom +
+                      24.0,
+                ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Selecione as Matérias',
+                      'Selecione ou Adicione Matérias',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -230,6 +250,63 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
                       ),
                     ),
                     const SizedBox(height: 16),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _novaMateriaController,
+                            style: const TextStyle(color: Colors.white),
+                            textCapitalization: TextCapitalization.words,
+                            decoration: InputDecoration(
+                              hintText: 'Digite uma matéria nova...',
+                              hintStyle: const TextStyle(color: Colors.grey),
+                              filled: true,
+                              fillColor: Colors.white12,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppCores.amareloBizzu,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.add, color: Colors.black),
+                            onPressed: () {
+                              final novaMateria = _novaMateriaController.text
+                                  .trim();
+                              if (novaMateria.isNotEmpty) {
+                                setModalState(() {
+                                  if (!_todasAsMaterias.contains(novaMateria)) {
+                                    _todasAsMaterias.insert(0, novaMateria);
+                                  }
+                                  if (!_materiasSelecionadas.contains(
+                                    novaMateria,
+                                  )) {
+                                    _materiasSelecionadas.add(novaMateria);
+                                  }
+                                });
+                                setState(() {});
+                                _novaMateriaController.clear();
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
                     _carregandoMateriasGerais
                         ? const Expanded(
                             child: Center(
@@ -349,7 +426,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
             SnackBar(
               content: Text(
                 widget.concursoParaEditar == null
-                    ? 'Concurso importado com sucesso!'
+                    ? 'Concurso cadastrado com sucesso!'
                     : 'Concurso atualizado com sucesso!',
               ),
               backgroundColor: Colors.green,
@@ -388,7 +465,7 @@ class _CadastrarConcursoViewState extends State<CadastrarConcursoView> {
         ),
         iconTheme: const IconThemeData(color: AppCores.amareloBizzu),
       ),
-        body: SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Form(
