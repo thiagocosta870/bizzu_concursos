@@ -12,7 +12,7 @@
 
 ## 📖 Sobre o Projeto
 
-O **Bizzu Concursos** é um aplicativo mobile desenvolvido em **Flutter** como Trabalho de Conclusão de Curso (TCC). Seu objetivo é resolver a desorganização no estudo para concursos públicos, centralizando métricas, cronogramas e conteúdos em uma única plataforma automatizada.
+O **Bizzu Concursos** é um aplicativo mobile desenvolvido em **Flutter**. Seu objetivo é resolver a desorganização no estudo para concursos públicos, centralizando métricas, cronogramas e conteúdos em uma única plataforma automatizada.
 
 Diferente de planilhas manuais, o Bizzu oferece importação inteligente de editais através de uma **API própria** e um sistema nativo de rastreamento de foco de estudos, tudo suportado por uma infraestrutura robusta na nuvem.
 
@@ -20,10 +20,10 @@ Diferente de planilhas manuais, o Bizzu oferece importação inteligente de edit
 
 ## ✨ Funcionalidades Principais
 
-- **Autenticação Segura:** Login via E-mail, Google e Facebook utilizando o Padrão Strategy.
+- **Autenticação Segura:** Login via E-mail, Google e Facebook.
 - **Importação Automatizada:** Leitura e salvamento de editais de concursos reais em apenas 1 clique através de API externa.
 - **Cronômetro Reativo:** Timer de estudos inteligente que utiliza canais nativos do SO para identificar perda de foco, distinguindo minimização intencional de desligamento automático da tela.
-- **Dashboard Analítico:** Gráficos interativos (Pie e Bar Charts) gerados em tempo real com o progresso de cada edital, foco por matéria e produtividade semanal.
+- **Dashboard Analítico:** Gráficos interativos gerados em tempo real com o progresso de cada edital, foco por matéria e produtividade semanal.
 - **CRUD Completo:** Criação, leitura, atualização e exclusão de matérias e sessões de estudo personalizadas.
 
 ---
@@ -32,9 +32,7 @@ Diferente de planilhas manuais, o Bizzu oferece importação inteligente de edit
 
 O projeto foi construído seguindo rigorosos padrões de engenharia de software para garantir escalabilidade e manutenção:
 
-- **Arquitetura Base:** MVVM / MVC (Models, Views e Controllers).
-- **Gerência de Estado:** Reatividade pontual utilizando `ChangeNotifier` e `StreamBuilder` para evitar reconstruções globais de tela (melhoria de performance e bateria).
-- **Padrão Repository:** Isolamento total da comunicação com o banco de dados e APIs externas na camada de repositório (`HistoricoRepository`, `RevisaoRepository`).
+- **Arquitetura Base:**MVC (Models, Views e Controllers).
 
 ---
 
